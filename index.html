@@ -86,6 +86,43 @@
   .swap-option span{font-size:11.5px;color:var(--sub);}
   .swap-revert{background:var(--paper);}
 
+  /* ---- Custom plan quiz ---- */
+  .build-card{background:linear-gradient(135deg,#2E3A5C,#1B2A4A);border:1px solid var(--line);border-radius:14px;
+    padding:16px;margin-bottom:14px;color:#fff;cursor:pointer;width:100%;text-align:left;}
+  .build-card h3{margin:0 0 4px 0;font-size:15.5px;}
+  .build-card p{margin:0;font-size:12px;color:#B9C4DE;line-height:1.4;}
+  .quiz-progress{display:flex;gap:5px;margin-bottom:20px;}
+  .quiz-progress .dot{flex:1;height:4px;border-radius:99px;background:var(--line);}
+  .quiz-progress .dot.done{background:var(--clay);}
+  .quiz-step-label{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:0.06em;
+    font-weight:800;margin-bottom:6px;}
+  .quiz-question{font-size:19px;font-weight:750;margin:0 0 20px 0;line-height:1.3;}
+  .quiz-option{display:block;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);
+    border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;font-family:inherit;
+    font-size:14px;font-weight:600;color:var(--ink);}
+  .quiz-option.selected{border-color:var(--clay);background:#FCEBE4;}
+  .quiz-nav{display:flex;justify-content:space-between;margin-top:10px;}
+  .quiz-back{background:transparent;border:none;color:var(--sub);font-size:13px;font-weight:700;cursor:pointer;padding:10px 0;}
+  .advisory-icon{font-size:40px;text-align:center;margin-bottom:10px;}
+
+  /* ---- Nutrition page ---- */
+  .nutri-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+    background:#F0F5EC;border:1px solid #CFE0BF;color:#3E5C2A;font-weight:700;font-size:13.5px;
+    padding:12px;border-radius:12px;cursor:pointer;margin-bottom:20px;}
+  .goal-toggle{display:flex;gap:6px;margin-bottom:16px;}
+  .goal-btn{flex:1;padding:9px 4px;border-radius:9px;border:1.5px solid var(--line);background:var(--card);
+    font-size:11.5px;font-weight:700;color:var(--sub);cursor:pointer;}
+  .goal-btn.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .plate{width:100%;max-width:220px;aspect-ratio:1;border-radius:50%;margin:0 auto 16px auto;position:relative;
+    background:conic-gradient(#6FA86A 0deg 180deg, #E2603A 180deg 270deg, #C98A2B 270deg 360deg);}
+  .plate-legend{display:flex;justify-content:center;gap:14px;font-size:11px;color:var(--sub);margin-bottom:20px;flex-wrap:wrap;}
+  .plate-legend span{display:inline-flex;align-items:center;gap:5px;}
+  .plate-legend i{width:9px;height:9px;border-radius:3px;display:inline-block;}
+  .meal-row{display:flex;gap:10px;margin-bottom:10px;}
+  .meal-row .mlabel{flex:0 0 78px;font-size:11.5px;font-weight:800;color:var(--sub);text-transform:uppercase;
+    letter-spacing:0.04em;padding-top:2px;}
+  .meal-row .mtext{flex:1;font-size:13px;line-height:1.5;}
+
   .section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--sub);
     font-weight:800;margin:22px 0 8px 2px;}
 
@@ -494,6 +531,204 @@ const PROGRAMS = {
 };
 
 /* =========================================================
+   CUSTOM PLAN QUIZ
+   ========================================================= */
+const QUIZ_QUESTIONS = [
+  {key:'age', q:'What\u2019s your age range?', opts:['Under 30','30\u201340','40\u201350','50+']},
+  {key:'days', q:'How many days a week can you realistically train?', opts:['2 days','3 days','4 days','5+ days']},
+  {key:'time', q:'How much time do you have per session?', opts:['15\u201320 min','30\u201345 min','45\u201360+ min']},
+  {key:'equipment', q:'What equipment do you have access to?', opts:['Full gym','Home, some dumbbells','No equipment at all']},
+  {key:'injury', q:'Any current injuries or joint issues?', opts:['None','Knee issue','Back, shoulder, or other issue']},
+  {key:'goal', q:'What\u2019s your main goal?', opts:['Fat loss','Muscle & strength','General fitness','Toning & shape']},
+  {key:'experience', q:'How would you describe your training experience?', opts:['Beginner','Intermediate','Advanced']},
+  {key:'focus', q:'How do you want sessions structured?', opts:['Full body each time','Upper body priority','Lower body priority','Core & cardio priority']},
+  {key:'cardio', q:'How do you feel about cardio?', opts:['Love it \u2014 give me more','Neutral, some is fine','Not a fan \u2014 minimize it']},
+  {key:'gender', q:'Gender (optional \u2014 kept for our records only, it doesn\u2019t change your plan)', opts:['Female','Male','Prefer not to say']},
+];
+
+const POOLS = {
+  machineUpper: ['chestpress','latpull','seatedrow','shoulderpress','bicep','tricep','flatbench','inclinepress','cableflye','chestdip','pushdown_rope','ohext','skullcrusher','dbrow','pecdeckrear','inclinecurl','hammercurl','cablecurl','shoulderpress_db','lateralraise','facepull','reardelt'],
+  machineLower: ['legpress_full','rdl','goblet_squat','lunge','legext','calfraise','step_up'],
+  machineCardio: ['elliptical','bike','treadmill_hiit','inclinewalk','stairmaster','rowing_intervals'],
+  mixedCore: ['plank','deadbug','bird_dog','woodchop','balance_stance','kneeraise','cablecrunch'],
+  bwUpper: ['pushup','tricep_dip_chair','pike_pushup','table_row'],
+  bwLower: ['squat_bw','lunge_bw','glutebridge','calfraise','step_up'],
+  bwCardio: ['jumping_jacks','high_knees','mountain_climbers','burpees'],
+  bwCore: ['plank','deadbug','glutebridge','bird_dog','balance_stance','superman'],
+  kneeUpper: ['chestpress','latpull','seatedrow','shoulderpress','bicep','tricep'],
+  kneeUpperBw: ['pushup','tricep_dip_chair','pike_pushup','table_row'],
+  kneeLower: ['legpress','hipabd','legraise','hamcurl','glutebridge','kickback'],
+  kneeLowerBw: ['glutebridge','balance_stance'],
+  kneeCore: ['plank','deadbug','bird_dog','balance_stance','woodchop'],
+  kneeCardio: ['elliptical','bike'],
+};
+
+function spreadTrainingDays(n, total){
+  const result = new Array(total).fill(false);
+  for(let i=0;i<n;i++){
+    const pos = Math.round(i * total / n) % total;
+    result[pos] = true;
+  }
+  return result;
+}
+
+function pick(pool, n, exclude){
+  exclude = exclude || [];
+  const filtered = pool.filter(id=>!exclude.includes(id));
+  return filtered.slice(0, n);
+}
+
+// Rotates the starting point through the pool each time a given day-type
+// repeats, so e.g. the second "Upper" day of the week doesn't look
+// identical to the first one.
+function pickRotating(pool, n, offset, exclude){
+  exclude = exclude || [];
+  const filtered = pool.filter(id=>!exclude.includes(id));
+  if(filtered.length === 0) return [];
+  const result = [];
+  for(let i=0; i<n && i<filtered.length; i++){
+    result.push(filtered[(offset+i) % filtered.length]);
+  }
+  return result;
+}
+
+function buildCustomProgram(a){
+  const days = parseInt(a.days); // 2,3,4,5
+  const perDayMap = {'15\u201320 min':3, '30\u201345 min':5, '45\u201360+ min':7};
+  let perDay = perDayMap[a.time] || 5;
+  if(a.experience === 'Beginner') perDay = Math.min(perDay, 5);
+
+  const isKnee = a.injury === 'Knee issue';
+  const noEquip = a.equipment === 'No equipment at all';
+  const is50plus = a.age === '50+';
+  const avoidCardio = a.cardio === 'Not a fan \u2014 minimize it';
+  const loveCardio = a.cardio === 'Love it \u2014 give me more';
+
+  // Resolve pools for this person
+  let upperPool, lowerPool, corePool, cardioPool, cardioNote = null;
+  if(isKnee){
+    upperPool = noEquip ? POOLS.kneeUpperBw : POOLS.kneeUpper;
+    lowerPool = noEquip ? POOLS.kneeLowerBw : POOLS.kneeLower;
+    corePool = POOLS.kneeCore;
+    cardioPool = noEquip ? [] : POOLS.kneeCardio;
+    if(noEquip) cardioNote = 'No jumping-based cardio is included given your knee and no-equipment setup \u2014 stick to walking or swimming instead.';
+  } else {
+    upperPool = noEquip ? POOLS.bwUpper : POOLS.machineUpper;
+    lowerPool = noEquip ? POOLS.bwLower : POOLS.machineLower;
+    corePool = noEquip ? POOLS.bwCore : POOLS.mixedCore;
+    cardioPool = noEquip ? POOLS.bwCardio : POOLS.machineCardio;
+    if(is50plus){
+      cardioPool = cardioPool.filter(id=>!['burpees','treadmill_hiit'].includes(id));
+      if(!corePool.includes('balance_stance')) corePool = ['balance_stance', ...corePool];
+    }
+    if(a.experience === 'Beginner') cardioPool = cardioPool.filter(id=>id!=='burpees');
+  }
+
+  // Reorder pools by goal (compounds first for strength, otherwise leave as-is)
+  if(a.goal === 'Muscle & strength'){
+    const priority = ['legpress_full','rdl','goblet_squat','flatbench','chestpress','latpull','seatedrow'];
+    lowerPool = [...lowerPool].sort((x,y)=>{
+      const rx = priority.includes(x) ? priority.indexOf(x) : 999;
+      const ry = priority.includes(y) ? priority.indexOf(y) : 999;
+      return rx - ry;
+    });
+  }
+
+  // Decide session "type" rotation based on focus
+  let rotation;
+  if(a.focus === 'Full body each time') rotation = ['full'];
+  else if(a.focus === 'Upper body priority') rotation = ['upper','lower','upper'];
+  else if(a.focus === 'Lower body priority') rotation = ['lower','upper','lower'];
+  else rotation = ['cardio','full','core'];
+
+  if(loveCardio && !rotation.includes('cardio')) rotation = [...rotation, 'cardio'];
+
+  const trainMask = spreadTrainingDays(days, 7);
+  const daysArr = [];
+  let trainCount = 0;
+  const typeCounters = {full:0, upper:0, lower:0, cardio:0, core:0};
+
+  for(let i=0; i<7; i++){
+    if(!trainMask[i]){
+      daysArr.push({label:'Day '+(i+1), focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day \u2014 recovery is part of the plan, not a day off from it.'});
+      continue;
+    }
+    const type = rotation[trainCount % rotation.length];
+    trainCount++;
+    const rep = typeCounters[type] || 0;
+    typeCounters[type] = rep + 1;
+    const shift = Math.max(1, Math.floor(perDay/2));
+    const off = rep * shift;
+
+    let ids = [];
+    let tag = '';
+    let focus = '';
+
+    if(type === 'full'){
+      const nUpper = Math.ceil(perDay*0.4), nLower = Math.ceil(perDay*0.4);
+      ids = [...pickRotating(upperPool, nUpper, off), ...pickRotating(lowerPool, nLower, off)];
+      if(ids.length < perDay) ids.push(...pickRotating(corePool, perDay-ids.length, off, ids));
+      tag = 'Full body'; focus = 'Full-body session';
+    } else if(type === 'upper'){
+      ids = pickRotating(upperPool, perDay-1, off);
+      ids.push(...pickRotating(corePool, perDay-ids.length, off, ids));
+      tag = 'Upper'; focus = 'Upper body strength';
+    } else if(type === 'lower'){
+      ids = pickRotating(lowerPool, perDay-1, off);
+      ids.push(...pickRotating(corePool, perDay-ids.length, off, ids));
+      tag = 'Lower'; focus = 'Lower body strength';
+    } else if(type === 'cardio'){
+      const nCardio = Math.min(perDay-1, cardioPool.length) || 0;
+      ids = pickRotating(cardioPool, Math.max(nCardio,1), off);
+      ids.push(...pickRotating(corePool, perDay-ids.length, off, ids));
+      tag = 'Cardio'; focus = cardioPool.length ? 'Cardio + core' : 'Core (see note on cardio)';
+    } else if(type === 'core'){
+      ids = pickRotating(corePool, perDay, off);
+      tag = 'Core'; focus = 'Core & stability';
+    }
+
+    if(!avoidCardio && type!=='cardio' && cardioPool.length && ids.length < perDay){
+      ids.push(...pickRotating(cardioPool, perDay-ids.length, off, ids));
+    }
+
+    daysArr.push({label:'Day '+(i+1), focus, tag, ids: ids.slice(0,perDay)});
+  }
+
+  const rulesHtml = `
+    <h2>Your plan logic</h2>
+    <p class="meta">Generated from your answers \u2014 not a substitute for a coach or physical therapist.</p>
+    <div class="rule"><b>Goal:</b> ${a.goal} \u00b7 <b>Experience:</b> ${a.experience} \u00b7 <b>Equipment:</b> ${a.equipment}</div>
+    <div class="rule"><b>Training days:</b> ${days} per week, spread across the week automatically.</div>
+    ${isKnee ? `<div class="avoid-box"><b>Knee-aware:</b> only joint-safe exercises are included \u2014 no squats, lunges, or high-impact cardio.</div>` : ''}
+    ${cardioNote ? `<div class="rule">${cardioNote}</div>` : ''}
+    <div class="rule">Want a different plan? Retake the quiz any time from this program\u2019s home card.</div>
+  `;
+
+  return {
+    title: 'Your Custom Plan',
+    subtitle: `${a.goal} \u00b7 ${days} days/week \u00b7 ${a.equipment}`,
+    accent:'#7C5CBF', tagText:'Personalized', rulesLabel:'Plan logic', rulesHtml,
+    homeIcon:`<path d="M12 3 L14.5 9.5 L21 10 L16 14.5 L17.5 21 L12 17.5 L6.5 21 L8 14.5 L3 10 L9.5 9.5 Z" fill="white"/>`,
+    days: daysArr,
+  };
+}
+
+function loadCustomAnswers(){
+  try{ return JSON.parse(localStorage.getItem('wk-custom-answers')); }catch(e){ return null; }
+}
+function saveCustomAnswers(a){
+  localStorage.setItem('wk-custom-answers', JSON.stringify(a));
+}
+function ensureCustomProgram(){
+  const a = loadCustomAnswers();
+  if(a && a.injury !== 'Back, shoulder, or other issue'){
+    PROGRAMS.custom = buildCustomProgram(a);
+    return true;
+  }
+  return false;
+}
+
+/* =========================================================
    SWAP ALTERNATIVES (kept within the same safety/equipment
    context as the original exercise)
    ========================================================= */
@@ -568,6 +803,10 @@ let activeDay = null;
 let state = {};
 let restTimers = {};
 let holdTimers = {};
+let screen = 'home'; // 'home' | 'quiz' | 'advisory' | 'program' | 'nutrition'
+let quizStep = 0;
+let quizAnswers = {};
+let nutriGoal = 'Maintain';
 
 function getRollingDayIndex(pid, total){
   const key = 'wk-start-'+pid;
@@ -810,6 +1049,7 @@ function enterProgram(pid){
   const prog = PROGRAMS[pid];
   if(prog.locked) return;
   currentProgram = pid;
+  screen = 'program';
   loadProgramState(pid);
   const idx = getRollingDayIndex(pid, prog.days.length);
   activeDay = 'Day '+(idx+1);
@@ -818,6 +1058,17 @@ function enterProgram(pid){
 function exitProgram(){
   currentProgram = null;
   activeDay = null;
+  screen = 'home';
+  render();
+}
+function startQuiz(){
+  quizStep = 0;
+  quizAnswers = {};
+  screen = 'quiz';
+  render();
+}
+function exitQuiz(){
+  screen = 'home';
   render();
 }
 
@@ -849,16 +1100,39 @@ function renderHome(){
   document.getElementById('dayTabs').innerHTML = '';
   document.getElementById('fabRow').style.display = 'none';
 
+  const hasCustom = ensureCustomProgram();
+  const otherIds = Object.keys(PROGRAMS).filter(k=>k!=='custom');
+
   const app = document.getElementById('app');
   app.innerHTML = `
     <p class="home-intro">Pick a program. Each one tracks its own days, sets, and streak separately.</p>
+    ${hasCustom ? `
+      <button class="build-card" id="openCustom">
+        <h3>\u2728 ${PROGRAMS.custom.title}</h3>
+        <p>${PROGRAMS.custom.subtitle} \u2014 tap to open, or retake the quiz below.</p>
+      </button>
+      <button class="swap-day-btn" id="retakeQuiz" style="margin-bottom:20px;">Retake the quiz</button>
+    ` : `
+      <button class="build-card" id="startQuizBtn">
+        <h3>\u2728 Build My Plan</h3>
+        <p>Answer 10 quick questions and get a personalized weekly plan pulled from our full exercise library.</p>
+      </button>
+    `}
     <div class="prog-grid">
-      ${Object.keys(PROGRAMS).map(programCard).join('')}
+      ${otherIds.map(programCard).join('')}
     </div>
+    <button class="nutri-btn" id="openNutrition">\u{1F957} Nutrition Guide</button>
   `;
   app.querySelectorAll('[data-open]').forEach(btn=>{
     btn.onclick = ()=> enterProgram(btn.dataset.open);
   });
+  if(hasCustom){
+    document.getElementById('openCustom').onclick = ()=> enterProgram('custom');
+    document.getElementById('retakeQuiz').onclick = startQuiz;
+  } else {
+    document.getElementById('startQuizBtn').onclick = startQuiz;
+  }
+  document.getElementById('openNutrition').onclick = ()=>{ screen='nutrition'; render(); };
 }
 
 /* =========================================================
@@ -1098,10 +1372,141 @@ function toggleRest(id, btn){
 }
 
 /* =========================================================
+   RENDER: QUIZ
+   ========================================================= */
+function renderQuiz(){
+  document.getElementById('headerTitle').textContent = 'BUILD MY PLAN';
+  document.getElementById('backBtn').style.display = 'block';
+  document.getElementById('backBtn').onclick = exitQuiz;
+  document.getElementById('dayTabs').innerHTML = '';
+  document.getElementById('fabRow').style.display = 'none';
+
+  const total = QUIZ_QUESTIONS.length;
+  const q = QUIZ_QUESTIONS[quizStep];
+  const app = document.getElementById('app');
+
+  app.innerHTML = `
+    <div class="quiz-progress">
+      ${QUIZ_QUESTIONS.map((_,i)=>`<div class="dot ${i<=quizStep?'done':''}"></div>`).join('')}
+    </div>
+    <div class="quiz-step-label">Question ${quizStep+1} of ${total}</div>
+    <div class="quiz-question">${q.q}</div>
+    ${q.opts.map(opt=>`<button class="quiz-option ${quizAnswers[q.key]===opt?'selected':''}" data-opt="${opt}">${opt}</button>`).join('')}
+    ${quizStep>0 ? `<div class="quiz-nav"><button class="quiz-back" id="quizBack">\u2190 Back</button></div>` : ''}
+  `;
+  app.querySelectorAll('[data-opt]').forEach(btn=>{
+    btn.onclick = ()=>{
+      quizAnswers[q.key] = btn.dataset.opt;
+      if(quizStep < total-1){ quizStep++; render(); }
+      else { finishQuiz(); }
+    };
+  });
+  if(quizStep>0){
+    document.getElementById('quizBack').onclick = ()=>{ quizStep--; render(); };
+  }
+}
+
+function finishQuiz(){
+  saveCustomAnswers(quizAnswers);
+  if(quizAnswers.injury === 'Back, shoulder, or other issue'){
+    screen = 'advisory';
+    render();
+  } else {
+    PROGRAMS.custom = buildCustomProgram(quizAnswers);
+    enterProgram('custom');
+  }
+}
+
+function renderAdvisory(){
+  document.getElementById('headerTitle').textContent = 'BUILD MY PLAN';
+  document.getElementById('backBtn').style.display = 'block';
+  document.getElementById('backBtn').onclick = exitQuiz;
+  document.getElementById('dayTabs').innerHTML = '';
+  document.getElementById('fabRow').style.display = 'none';
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="card" style="display:block;padding:22px;">
+      <div class="advisory-icon">\u{1FA7A}</div>
+      <h2 style="text-align:center;margin:0 0 10px 0;">Let\u2019s be careful here</h2>
+      <p style="text-align:center;color:var(--sub);font-size:13.5px;line-height:1.6;margin:0 0 16px 0;">
+        You mentioned a back, shoulder, or other injury. We don\u2019t have exercises vetted specifically for that here,
+        so we can\u2019t responsibly auto-generate a plan around it. Please check with a doctor or physical therapist
+        before starting a new program \u2014 they can tell you what movements are safe for your specific situation.
+      </p>
+      <div class="avoid-box">Once you\u2019re cleared, come back and retake the quiz \u2014 select "None" or "Knee issue" if that\u2019s accurate, and we\u2019ll build your plan.</div>
+    </div>
+    <button class="swap-day-btn" id="backToQuizFromAdvisory" style="margin-top:14px;">\u2190 Retake the quiz</button>
+    <button class="swap-day-btn" id="backHomeFromAdvisory">Back to all programs</button>
+  `;
+  document.getElementById('backToQuizFromAdvisory').onclick = startQuiz;
+  document.getElementById('backHomeFromAdvisory').onclick = exitQuiz;
+}
+
+/* =========================================================
+   RENDER: NUTRITION (standalone, no timers/state/network)
+   ========================================================= */
+const NUTRI_GOALS = {
+  'Lose fat': 'Eat in a modest calorie deficit \u2014 enough to lose fat steadily without losing muscle or energy for training. Keep protein high; it\u2019s what protects your muscle while you\u2019re in a deficit.',
+  'Maintain': 'Eat roughly what your body uses \u2014 enough to fuel training and recovery without gaining or losing much. Protein and consistency still matter more than any single meal.',
+  'Build muscle': 'Eat in a small calorie surplus, with protein spread across the day. Muscle is built with training + recovery + slightly more fuel than maintenance, not by protein alone.',
+};
+
+function renderNutrition(){
+  document.getElementById('headerTitle').textContent = 'NUTRITION GUIDE';
+  document.getElementById('backBtn').style.display = 'block';
+  document.getElementById('backBtn').onclick = ()=>{ screen='home'; render(); };
+  document.getElementById('dayTabs').innerHTML = '';
+  document.getElementById('fabRow').style.display = 'none';
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <p class="home-intro">General nutrition principles that work alongside any of the programs \u2014 not a personalized meal plan, and not a substitute for a registered dietitian.</p>
+
+    <div class="section-title">What's your current goal?</div>
+    <div class="goal-toggle">
+      ${Object.keys(NUTRI_GOALS).map(g=>`<button class="goal-btn ${g===nutriGoal?'active':''}" data-goal="${g}">${g}</button>`).join('')}
+    </div>
+    <div class="card" style="display:block;padding:14px 16px;margin-bottom:20px;">
+      <p style="margin:0;font-size:13px;line-height:1.55;">${NUTRI_GOALS[nutriGoal]}</p>
+    </div>
+
+    <div class="section-title">Build your plate</div>
+    <div class="plate"></div>
+    <div class="plate-legend">
+      <span><i style="background:#6FA86A"></i>Half: vegetables & fruit</span>
+      <span><i style="background:#E2603A"></i>Quarter: protein</span>
+      <span><i style="background:#C98A2B"></i>Quarter: whole grains / starchy carbs</span>
+    </div>
+
+    <div class="section-title">Daily anchors</div>
+    <div class="rule"><b>Protein:</b> roughly 1.6\u20132.2g per kg of bodyweight per day if you're training regularly \u2014 spread across 3\u20134 meals rather than one big serving.</div>
+    <div class="rule"><b>Water:</b> aim for pale-yellow urine as a simple hydration check \u2014 more on training days or in heat.</div>
+    <div class="rule"><b>Fiber:</b> vegetables, fruit, legumes, and whole grains at most meals \u2014 keeps you full and supports digestion.</div>
+    <div class="rule"><b>Consistency beats perfection:</b> a plan you can follow 90% of the time beats a stricter one you abandon in 2 weeks.</div>
+
+    <div class="section-title">A simple day, structured</div>
+    <div class="meal-row"><div class="mlabel">Breakfast</div><div class="mtext">A protein source (eggs, yogurt, cottage cheese) + fruit or whole grains.</div></div>
+    <div class="meal-row"><div class="mlabel">Lunch</div><div class="mtext">Lean protein + vegetables + a carb source (rice, potatoes, bread).</div></div>
+    <div class="meal-row"><div class="mlabel">Dinner</div><div class="mtext">Similar structure to lunch, lighter on carbs if training was earlier in the day.</div></div>
+    <div class="meal-row"><div class="mlabel">Snacks</div><div class="mtext">Fruit, nuts, yogurt, or a protein shake if you're short on protein for the day.</div></div>
+
+    <div class="avoid-box" style="margin-top:20px;">This is general, widely-applicable guidance \u2014 not tailored to your body, labs, or any medical condition. If you have a health condition, are pregnant, or have specific dietary needs, please work with a doctor or registered dietitian for individual numbers.</div>
+  `;
+  app.querySelectorAll('[data-goal]').forEach(btn=>{
+    btn.onclick = ()=>{ nutriGoal = btn.dataset.goal; renderNutrition(); };
+  });
+}
+
+/* =========================================================
    MASTER RENDER
    ========================================================= */
 function render(){
-  if(!currentProgram){ renderHome(); } else { renderProgramView(); }
+  if(screen === 'quiz'){ renderQuiz(); }
+  else if(screen === 'advisory'){ renderAdvisory(); }
+  else if(screen === 'nutrition'){ renderNutrition(); }
+  else if(screen === 'program' && currentProgram){ renderProgramView(); }
+  else { renderHome(); }
 }
 
 /* =========================================================
