@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Training Programs</title>
+<style>
+  :root{
+    --navy:#14213B; --navy-2:#1E2E52; --paper:#F6F3EC; --card:#FFFFFF;
+    --ink:#1C1F26; --sub:#6B7280; --teal:#1F8A70; --clay:#E2603A;
+    --amber:#C98A2B; --red:#B3261E; --line:#E7E2D5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--paper);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-tap-highlight-color:transparent;}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;}
+
+  header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:14px 16px 0 16px;}
+  .headline{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+  .headline h1{font-size:15px;text-transform:uppercase;letter-spacing:0.06em;margin:0 0 10px 0;font-weight:800;}
+  .headline .streak{font-size:11px;color:#B9C4DE;letter-spacing:0.03em;}
+  .backbtn{background:none;border:none;color:#B9C4DE;font-size:12px;font-weight:700;cursor:pointer;padding:0 0 10px 0;}
+
+  .daytabs{display:flex;overflow-x:auto;gap:4px;padding-bottom:10px;scrollbar-width:none;}
+  .daytabs::-webkit-scrollbar{display:none;}
+  .daytab{flex:0 0 auto;padding:8px 12px;border-radius:8px 8px 0 0;font-size:12px;font-weight:700;
+    color:#9AA6C4;background:transparent;border:none;cursor:pointer;white-space:nowrap;}
+  .daytab .d{display:block;font-size:9px;font-weight:600;opacity:0.75;letter-spacing:0.05em;text-transform:uppercase;}
+  .daytab.active{color:#fff;background:var(--paper);}
+  .daytab.active .d{color:var(--sub);}
+
+  main{max-width:640px;margin:0 auto;padding:16px 16px 120px 16px;}
+
+  /* ---- Home grid ---- */
+  .home-intro{font-size:13px;color:var(--sub);margin-bottom:14px;line-height:1.5;}
+  .prog-grid{display:flex;flex-direction:column;gap:10px;}
+  .prog-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;
+    display:flex;align-items:center;gap:14px;cursor:pointer;text-align:left;width:100%;}
+  .prog-card:active{transform:scale(0.99);}
+  .prog-icon{flex:0 0 52px;width:52px;height:52px;border-radius:12px;display:flex;align-items:center;
+    justify-content:center;color:#fff;}
+  .prog-body h3{margin:0 0 2px 0;font-size:14.5px;font-weight:750;}
+  .prog-body p{margin:0;font-size:12px;color:var(--sub);line-height:1.4;}
+  .prog-tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;
+    color:var(--sub);margin-top:5px;display:inline-block;}
+  .prog-card.locked{opacity:0.55;cursor:default;}
+  .prog-card.locked .prog-icon{background:#C9C2B2 !important;}
+  .chev{margin-left:auto;color:var(--line);font-size:20px;flex:0 0 auto;}
+
+  /* ---- Focus banner / progress ---- */
+  .focus-banner{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+  .focus-banner .tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;
+    padding:4px 8px;border-radius:6px;color:#fff;flex:0 0 auto;}
+  .focus-banner p{margin:0;font-size:13px;color:var(--sub);line-height:1.4;}
+
+  .progress-wrap{margin-bottom:10px;}
+  .progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);margin-bottom:5px;
+    text-transform:uppercase;letter-spacing:0.05em;font-weight:700;}
+  .progress-track{height:6px;background:var(--line);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--clay);border-radius:99px;transition:width .35s ease;}
+
+  .celebrate{background:#EAF6EF;border:1px solid #BFE3CC;color:#1F6B3D;border-radius:12px;
+    padding:10px 14px;font-size:12.5px;font-weight:700;margin-bottom:14px;text-align:center;}
+  .streak-pill{display:inline-block;font-size:11px;font-weight:800;background:var(--navy-2);color:#fff;
+    padding:3px 9px;border-radius:99px;margin-bottom:12px;}
+
+  .timer-badge{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;border:none;
+    border-radius:12px;padding:10px 14px;margin-bottom:14px;width:100%;cursor:pointer;font-family:inherit;}
+  .timer-badge .tlabel{font-size:10px;text-transform:uppercase;letter-spacing:0.06em;opacity:0.7;font-weight:700;}
+  .timer-badge .tval{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:18px;font-weight:700;margin-left:auto;}
+  .timer-badge .ticon{font-size:14px;}
+
+  .swap-btn{font-size:11px;font-weight:700;border:1px solid var(--line);background:var(--card);color:var(--sub);
+    padding:5px 9px;border-radius:8px;cursor:pointer;white-space:nowrap;}
+  .swap-day-btn{display:block;width:100%;text-align:center;font-size:12.5px;font-weight:700;
+    border:1px dashed var(--line);background:transparent;color:var(--sub);padding:10px;border-radius:10px;
+    cursor:pointer;margin-bottom:14px;}
+  .swapped-tag{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;
+    color:var(--clay);background:#FCEBE4;padding:2px 6px;border-radius:5px;margin-top:4px;display:inline-block;}
+  .swap-option{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;font-family:inherit;}
+  .swap-option b{display:block;font-size:13.5px;margin-bottom:2px;}
+  .swap-option span{font-size:11.5px;color:var(--sub);}
+  .swap-revert{background:var(--paper);}
+
+  .section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--sub);
+    font-weight:800;margin:22px 0 8px 2px;}
+
+  .card{background:var(--card);border-radius:14px;border:1px solid var(--line);margin-bottom:10px;
+    overflow:hidden;display:flex;}
+  .card .iconbox{flex:0 0 52px;width:52px;height:52px;margin:12px 0 12px 12px;border-radius:11px;
+    display:flex;align-items:center;justify-content:center;background:var(--paper);border:1px solid var(--line);}
+  .card .content{padding:12px 14px;flex:1;min-width:0;}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .card h3{margin:0;font-size:14.5px;font-weight:750;}
+  .setsreps{font-size:11.5px;color:var(--sub);margin-top:2px;}
+  .cue{font-size:12px;color:var(--sub);margin-top:6px;line-height:1.45;}
+  .spot{font-size:11.5px;color:var(--navy-2);margin-top:5px;line-height:1.4;font-weight:600;}
+  .spot::before{content:"\1F4CD  ";}
+
+  .joint{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;
+    text-transform:uppercase;letter-spacing:0.04em;padding:2px 6px;border-radius:5px;flex:0 0 auto;}
+  .joint .dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+  .joint.none{color:var(--teal);background:#E7F5F1;}
+  .joint.none .dot{background:var(--teal);}
+  .joint.light{color:var(--amber);background:#FBF1E1;}
+  .joint.light .dot{background:var(--amber);}
+
+  .pips-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:10px;flex-wrap:wrap;}
+  .pips{display:flex;gap:7px;}
+  .pip{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:transparent;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;
+    color:transparent;transition:all .15s ease;-webkit-appearance:none;padding:0;}
+  .pip.done{color:#fff;}
+
+  .rest-btn{font-size:11px;font-weight:700;border:none;background:var(--navy);color:#fff;
+    padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .rest-btn.running{background:var(--clay);}
+  .hold-btn{background:var(--teal);}
+  .hold-btn.running{background:var(--clay);}
+
+  .avoid-box{background:#FBEAE8;border:1px solid #F0C4BF;border-radius:12px;padding:12px 14px;
+    font-size:12.5px;line-height:1.55;color:#7A2A24;}
+  .avoid-box b{color:var(--red);}
+
+  .fab-row{position:fixed;bottom:18px;left:0;right:0;display:flex;justify-content:center;gap:8px;
+    z-index:15;padding:0 16px;}
+  .fab{background:var(--navy);color:#fff;border:none;padding:12px 18px;border-radius:99px;font-size:13px;
+    font-weight:700;display:flex;align-items:center;gap:8px;cursor:pointer;box-shadow:0 8px 20px rgba(20,33,59,0.35);}
+  .fab.learn{background:var(--clay);}
+
+  .flash-icon{width:96px;height:96px;border-radius:20px;background:var(--paper);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;margin:6px auto 16px auto;}
+  .flash-counter{text-align:center;font-size:11px;color:var(--sub);font-weight:700;text-transform:uppercase;
+    letter-spacing:0.06em;margin-bottom:2px;}
+  .flash-body{text-align:center;}
+  .flash-body h2{margin:4px 0 2px 0;font-size:19px;}
+  .flash-hint{color:var(--sub);font-size:13px;margin:8px 0 0 0;}
+  .reveal-btn{display:block;margin:16px auto 0 auto;background:var(--navy);color:#fff;border:none;
+    padding:11px 22px;border-radius:99px;font-size:13.5px;font-weight:700;cursor:pointer;}
+  .flash-detail{margin-top:10px;}
+  .flash-detail .spot,.flash-detail .cue{text-align:left;margin-top:10px;background:var(--card);
+    border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+  .flash-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px;}
+  .nav-btn{flex:1;background:var(--card);border:1px solid var(--line);color:var(--ink);padding:11px 0;
+    border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;}
+
+  .overlay{position:fixed;inset:0;background:rgba(20,20,25,0.5);z-index:30;display:none;
+    align-items:flex-end;justify-content:center;}
+  .overlay.open{display:flex;}
+  .sheet{background:var(--paper);width:100%;max-width:640px;border-radius:18px 18px 0 0;
+    padding:20px 20px 28px 20px;max-height:82vh;overflow-y:auto;}
+  .sheet h2{margin:0 0 4px 0;font-size:17px;}
+  .sheet .close{display:block;margin:0 auto;background:transparent;border:none;width:36px;height:4px;
+    border-radius:99px;background:var(--line);margin-bottom:14px;}
+  .sheet .meta{font-size:12px;color:var(--sub);margin-bottom:16px;}
+  .rule{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:12.5px;margin-bottom:10px;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="headline">
+    <h1 id="headerTitle">TRAINING PROGRAMS</h1>
+    <span class="streak" id="dateLabel"></span>
+  </div>
+  <button class="backbtn" id="backBtn" style="display:none;">&larr; All programs</button>
+  <div class="daytabs" id="dayTabs"></div>
+</header>
+
+<main id="app"></main>
+
+<div class="fab-row" id="fabRow" style="display:none;">
+  <button class="fab learn" id="openLearn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6c4-2 8-2 8 0v14c0-2-4-2-8 0V6Z" stroke="white" stroke-width="1.8"/><path d="M20 6c-4-2-8-2-8 0v14c0-2 4-2 8 0V6Z" stroke="white" stroke-width="1.8"/></svg>
+    Learn names
+  </button>
+  <button class="fab" id="openRules">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2 L9 11 L13 21" stroke="white" stroke-width="2.4" fill="none"/><circle cx="9" cy="11" r="2.2" stroke="#E2603A" stroke-width="1.6" fill="#14213B"/></svg>
+    <span id="rulesLabel">Rules</span>
+  </button>
+</div>
+
+<div class="overlay" id="learnOverlay">
+  <div class="sheet">
+    <button class="close" id="closeLearn"></button>
+    <div class="flash-counter" id="flashCounter"></div>
+    <div class="flash-icon" id="flashIconBox"></div>
+    <div class="flash-body" id="flashBody"></div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <button class="close" id="closeSheet"></button>
+    <div id="rulesContent"></div>
+  </div>
+</div>
+
+<div class="overlay" id="swapOverlay">
+  <div class="sheet">
+    <button class="close" id="closeSwap"></button>
+    <h2 id="swapTitle">Swap exercise</h2>
+    <p class="meta">Machine taken, or just want a change? Pick an alternative for today.</p>
+    <div id="swapOptions"></div>
+  </div>
+</div>
+
+<div class="overlay" id="daySwapOverlay">
+  <div class="sheet">
+    <button class="close" id="closeDaySwap"></button>
+    <h2>Swap with which day?</h2>
+    <p class="meta" id="daySwapMeta"></p>
+    <div id="daySwapOptions"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ICONS
+   ========================================================= */
+const CATS = {
+  cardio: { color:'#1F8A70', label:'Cardio' },
+  upper:  { color:'#14213B', label:'Upper body' },
+  lower:  { color:'#E2603A', label:'Lower body' },
+  core:   { color:'#1C1F26', label:'Core' },
+};
+
+const MOVE_ICONS = {
+  arc:      `<path d="M8 26 Q20 12 32 26" fill="none"/><circle cx="14" cy="23.4" r="2" fill="currentColor" stroke="none"/><circle cx="26" cy="23.4" r="2" fill="currentColor" stroke="none"/>`,
+  pedal:    `<circle cx="20" cy="20" r="10"/><circle cx="20" cy="20" r="2.2" fill="currentColor" stroke="none"/><path d="M20 20 L26 14"/>`,
+  pushOut:  `<circle cx="12" cy="20" r="2.4" fill="currentColor" stroke="none"/><path d="M16 20 H28 M22 15 L28 20 L22 25"/>`,
+  pullDown: `<path d="M12 10 H28"/><path d="M20 10 V26"/><path d="M15 21 L20 26 L25 21"/><circle cx="20" cy="30" r="2.4" fill="currentColor" stroke="none"/>`,
+  pullIn:   `<circle cx="28" cy="20" r="2.4" fill="currentColor" stroke="none"/><path d="M24 20 H12 M18 15 L12 20 L18 25"/>`,
+  pushUp:   `<path d="M20 26 V13" /><path d="M15 18 L20 13 L25 18"/><circle cx="20" cy="30" r="2.4" fill="currentColor" stroke="none"/>`,
+  curl:     `<path d="M12 28 L18 18" /><path d="M18 18 Q24 10 24 8" /><path d="M20.5 9.5 L24 8 L24.5 11.5"/><circle cx="18" cy="18" r="2.2" fill="none"/>`,
+  pushDown: `<path d="M20 12 V25"/><path d="M15 20 L20 25 L25 20"/><circle cx="20" cy="10" r="2.4" fill="currentColor" stroke="none"/>`,
+  legPush:  `<path d="M13 30 L19 20 L27 11"/><circle cx="19" cy="20" r="2.4" fill="none"/><path d="M28 16 H34 M30.5 12.5 L34 16 L30.5 19.5"/>`,
+  outDouble:`<circle cx="20" cy="20" r="2.2" fill="currentColor" stroke="none"/><path d="M17 20 H9 M12.5 16.5 L9 20 L12.5 23.5"/><path d="M23 20 H31 M27.5 16.5 L31 20 L27.5 23.5"/>`,
+  legUp:    `<path d="M15 32 L21 11"/><circle cx="15" cy="32" r="2.2" fill="currentColor" stroke="none"/><path d="M18.5 17 L21 11 L24.5 15"/>`,
+  legBack:  `<path d="M14 11 L19 22 L15 32"/><circle cx="19" cy="22" r="2.2" fill="none"/><path d="M10 27 Q7 24 9 20"/><path d="M7.5 23 L9 20 L11.5 22"/>`,
+  hipLift:  `<path d="M9 27 H19"/><circle cx="24" cy="27" r="2.2" fill="none"/><path d="M24 24 V15"/><path d="M20.5 19 L24 15 L27.5 19"/>`,
+  legKick:  `<path d="M22 12 L18 22 L27 27"/><circle cx="18" cy="22" r="2.2" fill="none"/><path d="M29 22 L27 27 L23.5 25"/>`,
+  hold:     `<path d="M8 24 H30" stroke-width="3.2"/><circle cx="8" cy="24" r="2.6" fill="currentColor" stroke="none"/><path d="M24 12 A6 6 0 1 1 23.9 12" stroke-width="1.6"/><path d="M24 9 V12 L26 13" stroke-width="1.6"/>`,
+  cross:    `<path d="M10 12 L18 20 M22 20 L30 28"/><circle cx="20" cy="20" r="2.2" fill="none"/><path d="M15 13 L18 12 L17 15"/><path d="M29 25 L30 28 L27 27"/>`,
+  rotate:   `<path d="M11 29 Q18 12 29 12"/><path d="M25.5 9 L29 12 L25.5 15"/>`,
+  hug:      `<circle cx="20" cy="20" r="2.2" fill="currentColor" stroke="none"/><path d="M8 14 Q14 20 18 20"/><path d="M12 10 L8 14 L13 17"/><path d="M32 14 Q26 20 22 20"/><path d="M28 10 L32 14 L27 17"/>`,
+  hinge:    `<circle cx="18" cy="18" r="2.2" fill="none"/><path d="M14 30 L18 18 L28 12"/><path d="M22 24 V14"/><path d="M19.5 17 L22 14 L24.5 17"/>`,
+  squat:    `<circle cx="20" cy="6" r="2.2" fill="currentColor" stroke="none"/><path d="M20 9 V18"/><path d="M20 18 L12 30"/><path d="M20 18 L28 30"/><path d="M31 20 V26 M28.5 23 L31 26 L33.5 23"/>`,
+  balance:  `<circle cx="20" cy="8" r="2.4" fill="currentColor" stroke="none"/><path d="M20 11 V22"/><path d="M20 22 L16 32"/><path d="M20 16 L28 12"/><path d="M20 16 L14 12"/>`,
+};
+
+function iconSvg(id, size){
+  const ex = EX[id];
+  const cat = CATS[ex.cat];
+  size = size || 30;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 40 40" fill="none" stroke="${cat.color}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" color="${cat.color}">${MOVE_ICONS[ex.move]}</svg>`;
+}
+
+/* =========================================================
+   EXERCISE LIBRARY (shared across programs where the same
+   machine/movement applies)
+   ========================================================= */
+const EX = {
+  // ---- Cardio (shared) ----
+  elliptical: {name:'Elliptical', cat:'cardio', reps:'20\u201330 min', sets:1, cue:'Moderate pace. Zero impact, full range of motion.', move:'arc', spot:'Pedals mounted on long arms, moving feet in an oval path \u2014 no seat, you stand the whole time.'},
+  bike: {name:'Stationary bike', cat:'cardio', reps:'20\u201330 min', sets:1, cue:'Moderate resistance.', move:'pedal', spot:'Seat over pedals, small console in front. Upright or recumbent \u2014 either works.'},
+  treadmill_hiit: {name:'Treadmill HIIT', cat:'cardio', reps:'15 min', sets:1, cue:'Sprint pace should feel like an honest 8/10 effort by the final round.', move:'arc', spot:'Alternating intervals: 1 minute hard sprint, 1 minute walking recovery.'},
+  inclinewalk: {name:'Incline treadmill walk', cat:'cardio', reps:'15 min', sets:1, cue:'No holding the handrails \u2014 that\u2019s the whole point of the incline.', move:'arc', spot:'Steady brisk walk with the treadmill incline set to 10\u201312%.'},
+  stairmaster: {name:'Stairmaster / elliptical', cat:'cardio', reps:'15 min', sets:1, cue:'Stay off the handrails; keep posture tall.', move:'arc', spot:'Steady-state cardio at a pace where you can only speak in short sentences.'},
+  rowing_intervals: {name:'Rowing / bike intervals', cat:'cardio', reps:'20 min', sets:1, cue:'On the rower: legs push first, then lean, then pull \u2014 reverse on the way back.', move:'pedal', spot:'High-intensity intervals: 40 seconds hard, 80 seconds easy.'},
+
+  // ---- Upper body machines (shared) ----
+  chestpress: {name:'Chest press machine', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Controlled tempo, full range, don\u2019t lock elbows out hard at the top.', move:'pushOut', spot:'Seat facing forward with two handles at chest height that push straight out together.'},
+  latpull: {name:'Lat pulldown', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Pull to upper chest, squeeze shoulder blades together.', move:'pullDown', spot:'Wide bar hanging from a cable up top; thigh pads hold you down in the seat below it.'},
+  seatedrow: {name:'Seated row machine', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Keep chest up, drive elbows back rather than pulling with arms.', move:'pullIn', spot:'Seat facing a chest pad, handles out in front that you pull straight back toward your ribs.'},
+  shoulderpress: {name:'Shoulder press machine', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Moderate weight, core braced so lower back doesn\u2019t arch.', move:'pushUp', spot:'Seat with a back pad, handles starting around shoulder height, pressing straight overhead.'},
+  bicep: {name:'Bicep curls', cat:'upper', reps:'12 reps', sets:3, cue:'Slow on the way down \u2014 that\u2019s where most of the work happens.', move:'curl', spot:'Padded arm rest angled forward, or just a dumbbell \u2014 elbow stays pinned, forearm curls up.'},
+  tricep: {name:'Tricep pushdown', cat:'upper', reps:'12\u201315 reps', sets:3, cue:'Elbows pinned to your sides through the whole movement.', move:'pushDown', spot:'High cable pulley with a short bar or rope handle, pushed straight down in front of you.'},
+
+  // ---- Lower body, knee-safe (Knee-Safe program only) ----
+  legpress: {name:'Leg press \u2014 partial range', cat:'lower', reps:'12 reps', sets:3, cue:'Never past 90\u00b0 knee flexion. Slow, controlled, light-moderate weight.', joint:'light', move:'legPush', spot:'Reclined seat facing a large angled platform you push away with your feet.'},
+  hipabd: {name:'Hip abductor / adductor', cat:'lower', reps:'15 reps each way', sets:3, cue:'Outer thigh/glute shaping with almost zero knee stress.', joint:'none', move:'outDouble', spot:'Seated machine with padded levers on the outside (or inside) of both thighs that push apart or together.'},
+  legraise: {name:'Straight leg raises', cat:'lower', reps:'15 reps', sets:3, cue:'Leg stays straight throughout \u2014 pure quad activation, no knee bend.', joint:'none', move:'legUp', spot:'Lying on a bench or mat, or a captain\u2019s chair \u2014 the working leg never bends at the knee.'},
+  hamcurl: {name:'Seated hamstring curl', cat:'lower', reps:'12 reps', sets:3, cue:'Light-moderate weight, controlled on the way back up.', joint:'light', move:'legBack', spot:'Seated machine, a padded roller rests against the back of your ankles and curls under the seat.'},
+  glutebridge: {name:'Glute bridge / hip thrust', cat:'lower', reps:'15 reps', sets:3, cue:'Minimal knee involvement. Squeeze glutes at the top.', joint:'none', move:'hipLift', spot:'Upper back against a bench or pad, hips drop then drive straight up toward the ceiling.'},
+  kickback: {name:'Cable kickbacks', cat:'lower', reps:'15 reps / side', sets:3, cue:'Working knee stays only slightly bent and stable.', joint:'light', move:'legKick', spot:'Low cable pulley with an ankle strap, leg kicks straight back and slightly up.'},
+
+  // ---- Lower body, no restrictions (Over 40 / 50 / Sa7el) ----
+  legpress_full: {name:'45\u00b0 leg press \u2014 full range', cat:'lower', reps:'8\u201310 reps', sets:4, cue:'Lower to a full 90\u00b0 knee bend; never lock the knees out hard at the top.', move:'legPush', spot:'Seated in the sled, lower the platform deep and drive it away through your heels.'},
+  rdl: {name:'Romanian deadlifts', cat:'lower', reps:'10 reps', sets:4, cue:'Soft knees, flat back, feel a deep hamstring stretch, then drive the hips forward.', move:'hinge', spot:'Standing with dumbbells, hinge at the hips pushing your glutes back while the weights slide down your thighs.'},
+  legext: {name:'Seated leg extensions', cat:'lower', reps:'12\u201315 reps', sets:3, cue:'Hold a 1-second squeeze at the top of every rep.', move:'legUp', spot:'Seated at the machine, extend your legs against the pad until straight.'},
+  calfraise: {name:'Standing calf raises', cat:'lower', reps:'15 reps', sets:4, cue:'Pause 1 second at the top and 2 seconds in the deep stretch \u2014 no bouncing.', move:'legUp', spot:'On a step or calf machine, rise onto your toes as high as possible, then lower the heels below the platform.'},
+  goblet_squat: {name:'Goblet squats', cat:'lower', reps:'10\u201312 reps', sets:3, cue:'Chest tall, sit back and down between your knees, drive through mid-foot to stand.', move:'squat', spot:'Holding one dumbbell close to your chest, squat down between your feet and stand back up.'},
+  lunge: {name:'Walking lunges', cat:'lower', reps:'10 reps / side', sets:3, cue:'Front knee tracks over the ankle, back knee drops toward the floor without slamming down.', move:'squat', spot:'Holding light dumbbells, step forward into a lunge, alternating legs as you move across the floor.'},
+  step_up: {name:'Step-ups', cat:'lower', reps:'10 reps / side', sets:3, cue:'Drive through the whole foot on the step, don\u2019t push off the bottom leg.', move:'legPush', spot:'Using a step or low bench, step up fully with one leg, then step back down and switch.'},
+
+  // ---- Core / stability (shared) ----
+  plank: {name:'Plank', cat:'core', reps:'30\u201345 sec', sets:3, cue:'Straight line shoulders to heels, don\u2019t let hips sag.', move:'hold', spot:'No machine \u2014 just floor space, forearms and toes down, body in one straight line.', timed:true, holdSeconds:40},
+  deadbug: {name:'Dead bug', cat:'core', reps:'10 reps / side', sets:3, cue:'Lower back stays pressed into the floor throughout.', move:'cross', spot:'No machine \u2014 lying on your back, opposite arm and leg extend out slowly.'},
+  woodchop: {name:'Cable woodchop', cat:'core', reps:'12 reps / side', sets:3, cue:'Rotate from the torso, feet stay planted.', move:'rotate', spot:'Cable pulley set high or low, pulled diagonally across your body while feet stay still.'},
+  bird_dog: {name:'Bird dog', cat:'core', reps:'10 reps / side', sets:3, cue:'Keep hips square to the floor, extend slowly, don\u2019t let the low back arch.', move:'cross', spot:'On hands and knees, extend one arm and the opposite leg out straight, hold, then switch.'},
+  balance_stance: {name:'Single-leg balance', cat:'core', reps:'30 sec / side', sets:3, cue:'Soft knee on the standing leg, eyes forward \u2014 hold a rail at first if you need to.', move:'balance', spot:'Stand on one leg near a wall or rail for support if needed; work toward not needing to hold on.', timed:true, holdSeconds:30},
+  kneeraise: {name:'Hanging knee raises', cat:'core', reps:'to near failure', sets:3, cue:'Curl the pelvis upward at the top; avoid swinging.', move:'legUp', spot:'Hanging from a bar (or braced in a captain\u2019s chair), curl your knees up toward your chest.'},
+  cablecrunch: {name:'Kneeling cable crunches', cat:'core', reps:'12\u201315 reps', sets:3, cue:'Move from the spine, not the hips; exhale hard at the bottom.', move:'pushDown', spot:'Kneeling below a high cable, hold the rope beside your head and crunch your ribs down toward your pelvis.'},
+
+  // ---- Sa7el: Push day ----
+  flatbench: {name:'Dumbbell flat bench press', cat:'upper', reps:'8\u201310 reps', sets:4, cue:'Elbows at 45\u201360\u00b0 from the torso, feet planted, last 2 reps should be genuinely hard.', move:'pushOut', spot:'Lying flat on a bench, press two dumbbells from chest level up to lockout.'},
+  inclinepress: {name:'Incline dumbbell press', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Lower the dumbbells to the top of the chest, not the neck.', move:'pushOut', spot:'On a 30\u201345\u00b0 incline bench, press two dumbbells up from the top of your chest.'},
+  cableflye: {name:'Cable chest flyes', cat:'upper', reps:'12\u201315 reps', sets:3, cue:'Slight fixed bend in the elbows; squeeze 1 second where hands meet.', move:'hug', spot:'Standing between two cable towers, sweep the handles together in a wide hugging arc in front of your chest.'},
+  chestdip: {name:'Chest dips', cat:'upper', reps:'8\u201312 reps', sets:3, cue:'Lean torso forward ~30\u00b0 and flare elbows slightly to bias the chest.', move:'pushDown', spot:'Parallel bars (or assisted dip machine) \u2014 lower your body to a deep chest stretch, then press back up.'},
+  pushdown_rope: {name:'Tricep rope pushdowns', cat:'upper', reps:'12 reps', sets:3, cue:'Pin elbows tightly to the ribs; split the rope wide at the bottom for a harder contraction.', move:'pushDown', spot:'Standing at a high cable with a rope attachment, extend down until the arms lock out.'},
+  ohext: {name:'Overhead dumbbell extension', cat:'upper', reps:'10 reps', sets:3, cue:'Lock the core tall, elbows pointing forward, control the descent slowly.', move:'pushUp', spot:'Holding one dumbbell with both hands overhead, lower it behind your head then extend back up.'},
+  skullcrusher: {name:'EZ-bar skull crushers', cat:'upper', reps:'10 reps', sets:3, cue:'Keep upper arms vertical and still; lower slowly.', move:'pushDown', spot:'Lying on a flat bench holding an EZ-bar above your chest, bend only at the elbows to lower it toward your forehead.'},
+
+  // ---- Sa7el: Pull day ----
+  dbrow: {name:'Single-arm dumbbell row', cat:'upper', reps:'10 reps / side', sets:3, cue:'Row up to the hip pocket, not the chest; drive with the elbow.', move:'pullIn', spot:'One knee and hand braced on a bench, row a dumbbell from a full stretch up to your hip.'},
+  pecdeckrear: {name:'Machine rear delt flyes', cat:'upper', reps:'12\u201315 reps', sets:3, cue:'Chest stays glued to the pad; pause 1 second at the back of every rep.', move:'outDouble', spot:'Sit facing the pec deck machine\u2019s pad, handles set to the rear-delt position, sweep the arms back in a wide arc.'},
+  inclinecurl: {name:'Incline dumbbell curls', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Let the arms hang fully behind the torso at the bottom; control the lowering for 2\u20133 sec.', move:'curl', spot:'Seated back on a 45\u201360\u00b0 incline bench, arms hanging straight down, curl both dumbbells up.'},
+  hammercurl: {name:'Hammer curls', cat:'upper', reps:'12 reps', sets:3, cue:'Keep upper arms completely still; squeeze at the top.', move:'curl', spot:'Standing, palms facing each other (thumbs up), curl the dumbbells toward your shoulders.'},
+  cablecurl: {name:'Cable bicep curls', cat:'upper', reps:'12\u201315 reps', sets:3, cue:'Elbows pinned at the sides; control the negative all the way down.', move:'curl', spot:'Standing at a low cable with a straight or EZ bar attachment, curl the bar up to your shoulders.'},
+
+  // ---- Sa7el: Shoulders day ----
+  shoulderpress_db: {name:'Seated dumbbell shoulder press', cat:'upper', reps:'8\u201310 reps', sets:4, cue:'Back flat against the pad; lower to ear level, no bouncing at the bottom.', move:'pushUp', spot:'Seated with back supported, press two dumbbells from shoulder height straight overhead.'},
+  lateralraise: {name:'Dumbbell lateral raises', cat:'upper', reps:'12\u201315 reps', sets:4, cue:'Lead with the elbows, tip the dumbbells like pouring water, no swinging.', move:'outDouble', spot:'Standing, raise light dumbbells out to the sides up to shoulder height.'},
+  facepull: {name:'Cable face pulls', cat:'upper', reps:'15 reps', sets:3, cue:'Pull the rope apart toward your ears, pause 1 second, elbows high.', move:'pullIn', spot:'Pulley set at upper-chest height with a rope attachment \u2014 pull it toward your face, elbows flaring out.'},
+  reardelt: {name:'Bent-over rear delt flyes', cat:'upper', reps:'15 reps', sets:3, cue:'Chest close to parallel with the floor, tiny bend in the elbows, lead with the pinkies.', move:'outDouble', spot:'Hinged forward at the hips holding light dumbbells, raise them out to the sides like wings.'},
+
+  // ---- Bodyweight (Home Workout / Healthy Mommy, no equipment) ----
+  pushup: {name:'Push-ups', cat:'upper', reps:'8\u201315 reps', sets:3, cue:'Body in one straight line, elbows at ~45\u00b0, chest to just above the floor.', move:'pushOut', spot:'No equipment \u2014 hands under shoulders, knees down for an easier version if needed.'},
+  tricep_dip_chair: {name:'Chair tricep dips', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Keep hips close to the chair, bend elbows to ~90\u00b0, don\u2019t let shoulders creep up to your ears.', move:'pushDown', spot:'Hands on the edge of a sturdy chair or couch behind you, lower and press your body up.'},
+  pike_pushup: {name:'Pike push-ups', cat:'upper', reps:'8\u201312 reps', sets:3, cue:'Hips high, look toward your feet, lower the top of your head toward the floor.', move:'pushUp', spot:'No equipment \u2014 hips lifted high in an inverted-V position, hands and feet on the floor.'},
+  table_row: {name:'Table / counter rows', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Keep your body straight and rigid, pull your chest up to the table edge.', move:'pullIn', spot:'Lying under a sturdy table or holding a counter edge, pull your chest up toward it.'},
+  squat_bw: {name:'Bodyweight squats', cat:'lower', reps:'12\u201315 reps', sets:3, cue:'Chest tall, knees track over toes, sit back like reaching for a chair.', move:'squat', spot:'No equipment \u2014 feet shoulder-width, squat down and stand back up.'},
+  lunge_bw: {name:'Bodyweight lunges', cat:'lower', reps:'10 reps / side', sets:3, cue:'Front knee over the ankle, back knee taps gently toward the floor.', move:'squat', spot:'No equipment \u2014 step forward into a lunge, alternating legs.'},
+  wall_sit: {name:'Wall sit', cat:'lower', reps:'30\u201345 sec', sets:3, cue:'Thighs parallel to the floor, back flat against the wall, knees over ankles.', move:'hold', spot:'No equipment \u2014 back against a wall, slide down until knees are at 90\u00b0 and hold.', timed:true, holdSeconds:35},
+  superman: {name:'Superman hold', cat:'core', reps:'10 reps, 2 sec hold', sets:3, cue:'Lift chest and legs together, squeeze the glutes and back, don\u2019t yank the neck up.', move:'hipLift', spot:'No equipment \u2014 lying face-down, lift arms, chest, and legs off the floor together.'},
+  jumping_jacks: {name:'Jumping jacks', cat:'cardio', reps:'45 sec', sets:1, cue:'Land softly on the balls of your feet, keep a steady rhythm.', move:'arc', spot:'No equipment \u2014 classic jack: jump feet out while raising arms overhead, jump back in.', restSeconds:30},
+  high_knees: {name:'High knees', cat:'cardio', reps:'30\u201345 sec', sets:1, cue:'Drive the knees up toward hip height, stay light on your feet.', move:'arc', spot:'No equipment \u2014 run in place, driving your knees up high and fast.', restSeconds:30},
+  mountain_climbers: {name:'Mountain climbers', cat:'cardio', reps:'30\u201345 sec', sets:1, cue:'Keep the hips low and level, drive knees toward the chest quickly.', move:'cross', spot:'No equipment \u2014 in a plank position, alternate driving knees toward your chest.', restSeconds:30},
+  burpees: {name:'Burpees', cat:'cardio', reps:'8\u201312 reps', sets:1, cue:'Chest to the floor on the push-up, explode up into the jump.', move:'squat', spot:'No equipment \u2014 squat, kick back to a plank, push-up, jump feet in, jump up.', restSeconds:30},
+};
+
+
+/* =========================================================
+   PROGRAMS
+   ========================================================= */
+const KNEE_RULES = `
+  <h2>Knee rules</h2>
+  <p class="meta">Lateral meniscus tear (Grade III) &middot; medial degeneration &middot; mild effusion &middot; early OA</p>
+  <div class="rule"><b>General rule:</b> any sharp pain, pinching, or instability &mdash; stop that exercise and move to the next. Mild muscle fatigue is fine, joint pain is not.</div>
+  <div class="rule"><b>Leg press:</b> never past 90&deg; knee flexion, light-moderate load only.</div>
+  <div class="rule"><b>Cardio:</b> elliptical and bike only &mdash; zero impact. Bike seat high so the knee doesn't over-flex at the bottom of the stroke.</div>
+  <div class="avoid-box"><b>Avoid completely:</b> squats &middot; lunges &middot; leg extensions &middot; jumping / plyometrics &middot; pivoting or lateral agility drills &middot; treadmill running &middot; stair climber.</div>
+`;
+
+const OVER40_RULES = `
+  <h2>Program rules</h2>
+  <div class="rule"><b>Progressive overload, slowly:</b> add either 1 rep or a small amount of weight per week \u2014 not both at once.</div>
+  <div class="rule"><b>Warm up longer:</b> 5\u201310 min of light cardio plus a light warm-up set before your first working set of any lift.</div>
+  <div class="rule"><b>Joints over ego:</b> full range of motion with moderate weight beats a heavier half-rep every time.</div>
+  <div class="rule"><b>Protein at every meal</b> to support muscle maintenance, which naturally declines with age if untrained.</div>
+  <div class="rule"><b>Sleep 7+ hours</b> \u2014 recovery capacity is the main thing that changes after 40, not your ability to train hard.</div>
+`;
+
+const OVER50_RULES = `
+  <h2>Program rules</h2>
+  <div class="rule"><b>Balance work is not optional:</b> it's the single best thing you can do to prevent falls later in life.</div>
+  <div class="rule"><b>Stop if dizzy or short of breath</b> beyond normal exertion \u2014 check with a doctor before increasing intensity.</div>
+  <div class="rule"><b>Bone-loading matters:</b> resistance training here is as much about bone density as muscle.</div>
+  <div class="rule"><b>Always have support nearby</b> for single-leg and standing balance work until it feels easy.</div>
+  <div class="rule"><b>Consistency beats intensity</b> \u2014 moderate effort, done regularly, is the whole strategy.</div>
+`;
+
+const SA7EL_RULES = `
+  <h2>Program rules</h2>
+  <div class="rule">Last 2 reps of every working set should feel genuinely hard \u2014 if not, increase the weight next session.</div>
+  <div class="rule">Rest 60\u201390 sec on isolation moves, 90\u2013120 sec on presses, rows and leg press.</div>
+  <div class="rule">Progress one variable per week: +1 rep per set, or +2.5 kg when you hit the top of the rep range.</div>
+  <div class="rule">Protein at every meal; the biggest carb portion goes to the meal before or after training.</div>
+  <div class="rule">Sleep 7+ hours \u2014 the physique is built in recovery, not in the session.</div>
+  <div class="rule">Take front / side photos every week to track the transformation.</div>
+`;
+
+const HOME_RULES = `
+  <h2>Program rules</h2>
+  <div class="rule"><b>No equipment, no excuses:</b> every move here uses just your bodyweight, a chair, or a wall.</div>
+  <div class="rule"><b>Progress by reps first:</b> once a set feels easy, add reps before looking for added difficulty.</div>
+  <div class="rule"><b>Slow is fine:</b> a controlled push-up beats a fast sloppy one \u2014 quality over speed.</div>
+  <div class="rule"><b>Floor space only:</b> roughly 2m x 2m is all you need for the whole program.</div>
+`;
+
+const MOMMY_RULES = `
+  <h2>Program rules</h2>
+  <div class="rule"><b>Built for short windows:</b> every session is designed to fit in 15\u201320 minutes.</div>
+  <div class="rule"><b>Consistency over intensity:</b> 3 short sessions a week beats one long one you can\u2019t sustain.</div>
+  <div class="rule"><b>If postpartum:</b> get clearance from your doctor before starting, especially for core work.</div>
+  <div class="rule"><b>Shorter rest is normal here</b> \u2014 30 seconds between moves keeps sessions quick without rushing form.</div>
+  <div class="rule"><b>Any consistent movement counts</b> \u2014 missed a day? Just pick back up, no need to make it up.</div>
+`;
+
+
+const PROGRAMS = {
+  kneesafe: {
+    title:'Knee-Safe Recovery', subtitle:'Lateral meniscus tear (Grade III) friendly',
+    accent:'#E2603A', tagText:'Injury program', rulesLabel:'Knee rules', rulesHtml:KNEE_RULES,
+    homeIcon:`<path d="M12 2 L9 11 L13 21" stroke="white" stroke-width="2.4" fill="none"/><circle cx="9" cy="11" r="2.2" stroke="#E2603A" stroke-width="1.6" fill="#14213B"/>`,
+    days:[
+      {label:'Day 1', focus:'Upper body strength + core', tag:'Upper + core', ids:['chestpress','latpull','seatedrow','shoulderpress','bicep','tricep','plank','deadbug']},
+      {label:'Day 2', focus:'Cardio + core', tag:'Cardio', ids:['elliptical','bike','plank','woodchop']},
+      {label:'Day 3', focus:'Rest, or a light walk', tag:'Rest', ids:[], restNote:'Rest day. Legs and joints need this as much as the training does.'},
+      {label:'Day 4', focus:'Lower body (knee-safe) + core', tag:'Lower + core', ids:['legpress','hipabd','legraise','hamcurl','glutebridge','kickback','plank']},
+      {label:'Day 5', focus:'Cardio', tag:'Cardio', ids:['elliptical','bike']},
+      {label:'Day 6', focus:'Upper body, kept light', tag:'Upper (light)', ids:['chestpress','seatedrow','shoulderpress','bicep','deadbug']},
+      {label:'Day 7', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Legs and joints need this as much as the training does.'},
+    ]
+  },
+  over40: {
+    title:'Strength After 40', subtitle:'Muscle maintenance, joint-conscious training',
+    accent:'#2E6F9E', tagText:'No injuries', rulesLabel:'Program rules', rulesHtml:OVER40_RULES,
+    homeIcon:`<circle cx="12" cy="12" r="9" stroke="white" stroke-width="2"/><path d="M8 12h8" stroke="white" stroke-width="2"/>`,
+    days:[
+      {label:'Day 1', focus:'Upper body strength', tag:'Upper', ids:['chestpress','latpull','seatedrow','shoulderpress','bicep','tricep']},
+      {label:'Day 2', focus:'Cardio + core', tag:'Cardio', ids:['elliptical','bike','plank','woodchop']},
+      {label:'Day 3', focus:'Lower body strength', tag:'Lower', ids:['goblet_squat','legpress_full','rdl','hamcurl','calfraise']},
+      {label:'Day 4', focus:'Rest or gentle mobility', tag:'Rest', ids:[], restNote:'Rest day. Strength is built in recovery, not just in the gym.'},
+      {label:'Day 5', focus:'Full-body functional', tag:'Full body', ids:['lunge','seatedrow','shoulderpress','plank','deadbug']},
+      {label:'Day 6', focus:'Cardio', tag:'Cardio', ids:['elliptical','bike']},
+      {label:'Day 7', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Strength is built in recovery, not just in the gym.'},
+    ]
+  },
+  over50: {
+    title:'Strong After 50', subtitle:'Joint-friendly strength & fall-prevention balance',
+    accent:'#6D8B74', tagText:'No injuries', rulesLabel:'Program rules', rulesHtml:OVER50_RULES,
+    homeIcon:`<circle cx="12" cy="6" r="2.4" fill="white"/><path d="M12 9 v6 M12 15 l-4 5 M12 15 l4 5 M12 11 l6-2 M12 11 l-6-2" stroke="white" stroke-width="2" fill="none"/>`,
+    days:[
+      {label:'Day 1', focus:'Upper body, machine-based', tag:'Upper', ids:['chestpress','latpull','seatedrow','shoulderpress','bicep','tricep']},
+      {label:'Day 2', focus:'Low-impact cardio + core', tag:'Cardio', ids:['elliptical','bike','plank','bird_dog']},
+      {label:'Day 3', focus:'Lower body + balance', tag:'Lower + balance', ids:['legpress_full','hamcurl','glutebridge','balance_stance','calfraise']},
+      {label:'Day 4', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Bones and joints adapt during rest, not during the workout.'},
+      {label:'Day 5', focus:'Full-body + stability', tag:'Stability', ids:['seatedrow','shoulderpress','step_up','bird_dog','plank']},
+      {label:'Day 6', focus:'Low-impact cardio', tag:'Cardio', ids:['elliptical','bike']},
+      {label:'Day 7', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Bones and joints adapt during rest, not during the workout.'},
+    ]
+  },
+  sa7el: {
+    title:'Formet El Sa7el', subtitle:'5-day push / pull / shoulders / legs \u2014 beach-ready',
+    accent:'#F0A737', tagText:'No injuries', rulesLabel:'Program rules', rulesHtml:SA7EL_RULES,
+    homeIcon:`<path d="M4 16 Q8 12 12 16 T20 16" stroke="white" stroke-width="2.2" fill="none"/><path d="M4 20 Q8 16 12 20 T20 20" stroke="white" stroke-width="2.2" fill="none"/><circle cx="17" cy="7" r="3" fill="white"/>`,
+    days:[
+      {label:'Day 1', focus:'Push \u2014 chest & triceps', tag:'Push', ids:['flatbench','inclinepress','cableflye','chestdip','pushdown_rope','ohext','skullcrusher','woodchop','treadmill_hiit']},
+      {label:'Day 2', focus:'Pull \u2014 back & biceps', tag:'Pull', ids:['latpull','seatedrow','dbrow','pecdeckrear','inclinecurl','hammercurl','cablecurl','kneeraise','inclinewalk']},
+      {label:'Day 3', focus:'Active recovery', tag:'Recovery', ids:[], restNote:'Active recovery: aim for 10,000 steps through the day, 3\u20134L of water, and a 10\u201315 min mobility flow (hamstrings, hips, upper back). No lifting today.'},
+      {label:'Day 4', focus:'Shoulders & abs \u2014 the suit-width day', tag:'Shoulders', ids:['shoulderpress_db','lateralraise','facepull','reardelt','cablecrunch','stairmaster']},
+      {label:'Day 5', focus:'Legs \u2014 the big one', tag:'Legs', ids:['legpress_full','rdl','legext','hamcurl','calfraise','rowing_intervals']},
+      {label:'Day 6', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Take your weekly progress photo today.'},
+      {label:'Day 7', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day.'},
+    ]
+  },
+  home: {
+    title:'Home Workout', subtitle:'No machines, no equipment \u2014 anywhere you have floor space',
+    accent:'#4E7A6B', tagText:'No equipment', rulesLabel:'Program rules', rulesHtml:HOME_RULES,
+    homeIcon:`<path d="M4 12 L12 5 L20 12" stroke="white" stroke-width="2.2" fill="none"/><path d="M6 11 V19 H18 V11" stroke="white" stroke-width="2.2" fill="none"/>`,
+    days:[
+      {label:'Day 1', focus:'Upper body, bodyweight only', tag:'Upper', ids:['pushup','tricep_dip_chair','pike_pushup','table_row','plank']},
+      {label:'Day 2', focus:'Cardio burst, no equipment', tag:'Cardio', ids:['jumping_jacks','high_knees','mountain_climbers','burpees']},
+      {label:'Day 3', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Your muscles rebuild during the days off, not the workout itself.'},
+      {label:'Day 4', focus:'Lower body, bodyweight only', tag:'Lower', ids:['squat_bw','lunge_bw','glutebridge','wall_sit','calfraise']},
+      {label:'Day 5', focus:'Core + balance', tag:'Core', ids:['plank','deadbug','bird_dog','balance_stance']},
+      {label:'Day 6', focus:'Cardio burst, no equipment', tag:'Cardio', ids:['jumping_jacks','mountain_climbers','high_knees']},
+      {label:'Day 7', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Your muscles rebuild during the days off, not the workout itself.'},
+    ]
+  },
+  mommy: {
+    title:'Healthy Mommy', subtitle:'Quick, efficient full-body sessions for busy schedules',
+    accent:'#C9667A', tagText:'15\u201320 min sessions', rulesLabel:'Program rules', rulesHtml:MOMMY_RULES,
+    homeIcon:`<path d="M12 19 C7 15 4 12 4 8.5 A3.5 3.5 0 0 1 12 7 A3.5 3.5 0 0 1 20 8.5 C20 12 17 15 12 19 Z" fill="white"/>`,
+    days:[
+      {label:'Day 1', focus:'Full-body circuit \u2014 about 20 min', tag:'Circuit A', ids:['squat_bw','pushup','plank','glutebridge']},
+      {label:'Day 2', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Short and consistent beats long and occasional.'},
+      {label:'Day 3', focus:'Cardio burst \u2014 about 15 min', tag:'Cardio', ids:['jumping_jacks','mountain_climbers','high_knees']},
+      {label:'Day 4', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Short and consistent beats long and occasional.'},
+      {label:'Day 5', focus:'Full-body circuit \u2014 about 20 min', tag:'Circuit B', ids:['lunge_bw','table_row','bird_dog','wall_sit']},
+      {label:'Day 6', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day.'},
+      {label:'Day 7', focus:'Full-body circuit \u2014 about 20 min', tag:'Circuit C', ids:['squat_bw','tricep_dip_chair','deadbug','glutebridge']},
+    ]
+  },
+};
+
+/* =========================================================
+   SWAP ALTERNATIVES (kept within the same safety/equipment
+   context as the original exercise)
+   ========================================================= */
+const ALT_EXERCISES = {
+  chestpress:['flatbench','inclinepress','chestdip'],
+  latpull:['seatedrow','dbrow'],
+  seatedrow:['latpull','dbrow'],
+  shoulderpress:['shoulderpress_db','lateralraise'],
+  bicep:['inclinecurl','hammercurl','cablecurl'],
+  tricep:['pushdown_rope','skullcrusher','ohext'],
+  legpress:['legraise','hipabd','glutebridge'],
+  hipabd:['kickback','glutebridge','legraise'],
+  legraise:['hipabd','glutebridge'],
+  hamcurl:['glutebridge','kickback'],
+  glutebridge:['hipabd','kickback'],
+  kickback:['hipabd','glutebridge'],
+  elliptical:['bike'],
+  bike:['elliptical'],
+  plank:['deadbug','bird_dog'],
+  deadbug:['plank','bird_dog'],
+  woodchop:['cablecrunch','kneeraise'],
+  legpress_full:['goblet_squat','lunge'],
+  rdl:['hamcurl','legext'],
+  legext:['hamcurl','rdl'],
+  calfraise:['step_up'],
+  goblet_squat:['legpress_full','lunge'],
+  lunge:['goblet_squat','step_up'],
+  step_up:['lunge','goblet_squat'],
+  bird_dog:['deadbug','plank'],
+  balance_stance:['bird_dog'],
+  kneeraise:['woodchop','cablecrunch'],
+  cablecrunch:['woodchop','kneeraise'],
+  flatbench:['chestpress','inclinepress'],
+  inclinepress:['flatbench','chestpress'],
+  cableflye:['chestpress','flatbench'],
+  chestdip:['chestpress','tricep'],
+  pushdown_rope:['tricep','skullcrusher'],
+  ohext:['skullcrusher','tricep'],
+  skullcrusher:['tricep','pushdown_rope'],
+  dbrow:['seatedrow','latpull'],
+  pecdeckrear:['reardelt'],
+  inclinecurl:['bicep','hammercurl'],
+  hammercurl:['bicep','cablecurl'],
+  cablecurl:['bicep','inclinecurl'],
+  shoulderpress_db:['shoulderpress','lateralraise'],
+  lateralraise:['shoulderpress_db','reardelt'],
+  facepull:['reardelt','pecdeckrear'],
+  reardelt:['facepull','pecdeckrear'],
+  treadmill_hiit:['elliptical','bike'],
+  inclinewalk:['elliptical','bike'],
+  stairmaster:['elliptical','bike'],
+  rowing_intervals:['bike','elliptical'],
+  pushup:['pike_pushup','tricep_dip_chair'],
+  tricep_dip_chair:['pushup'],
+  pike_pushup:['pushup'],
+  table_row:['pushup'],
+  squat_bw:['lunge_bw','wall_sit'],
+  lunge_bw:['squat_bw','wall_sit'],
+  wall_sit:['squat_bw'],
+  superman:['bird_dog'],
+  jumping_jacks:['high_knees','mountain_climbers'],
+  high_knees:['jumping_jacks','mountain_climbers'],
+  mountain_climbers:['high_knees','burpees'],
+  burpees:['mountain_climbers','jumping_jacks'],
+};
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let currentProgram = null;
+let activeDay = null;
+let state = {};
+let restTimers = {};
+let holdTimers = {};
+
+function getRollingDayIndex(pid, total){
+  const key = 'wk-start-'+pid;
+  const todayStr = new Date().toDateString();
+  let startStr = localStorage.getItem(key);
+  if(!startStr){ localStorage.setItem(key, todayStr); startStr = todayStr; }
+  const start = new Date(startStr);
+  const today = new Date(todayStr);
+  const diff = Math.round((today - start) / 86400000);
+  return ((diff % total) + total) % total;
+}
+
+/* ---- Day order (lets a rest day and a training day trade places) ---- */
+function getDayOrder(pid){
+  const n = PROGRAMS[pid].days.length;
+  try{
+    const raw = localStorage.getItem('wk-order-'+pid);
+    if(raw){
+      const arr = JSON.parse(raw);
+      if(Array.isArray(arr) && arr.length===n) return arr;
+    }
+  }catch(e){ /* ignore */ }
+  return Array.from({length:n}, (_,i)=>i);
+}
+function saveDayOrder(pid, order){
+  localStorage.setItem('wk-order-'+pid, JSON.stringify(order));
+}
+function dayAtPosition(pid, pos){
+  const order = getDayOrder(pid);
+  const src = PROGRAMS[pid].days[order[pos]];
+  return Object.assign({}, src, {label: 'Day '+(pos+1)});
+}
+function swapDayPositions(pid, posA, posB){
+  const order = getDayOrder(pid);
+  const tmp = order[posA];
+  order[posA] = order[posB];
+  order[posB] = tmp;
+  saveDayOrder(pid, order);
+}
+function posFromLabel(label){
+  return parseInt(label.split(' ')[1], 10) - 1;
+}
+
+function initProgramState(pid){
+  const prog = PROGRAMS[pid];
+  state[pid] = {};
+  for(let pos=0; pos<prog.days.length; pos++){
+    const d = dayAtPosition(pid, pos);
+    state[pid][d.label] = {};
+    d.ids.forEach(id=>{
+      state[pid][d.label][id] = new Array(EX[id].sets).fill(false);
+    });
+    state[pid][d.label]._swaps = {};
+  }
+}
+
+function ensureDayStateInitialized(pid, positionLabel){
+  const pos = posFromLabel(positionLabel);
+  const d = dayAtPosition(pid, pos);
+  if(!state[pid][positionLabel]) state[pid][positionLabel] = {};
+  d.ids.forEach(id=>{
+    if(!state[pid][positionLabel][id]){
+      state[pid][positionLabel][id] = new Array(EX[id].sets).fill(false);
+    }
+  });
+  if(!state[pid][positionLabel]._swaps) state[pid][positionLabel]._swaps = {};
+}
+
+function loadProgramState(pid){
+  try{
+    const raw = localStorage.getItem('wk-progress-'+pid);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed.date === new Date().toDateString()){ state[pid] = parsed.state; return; }
+    }
+  }catch(e){ /* ignore */ }
+  initProgramState(pid);
+}
+
+function saveProgramState(pid){
+  try{
+    localStorage.setItem('wk-progress-'+pid, JSON.stringify({date:new Date().toDateString(), state:state[pid]}));
+  }catch(e){ /* ignore */ }
+}
+
+function getStreak(pid){
+  try{ return JSON.parse(localStorage.getItem('wk-streak-'+pid) || '{"count":0,"lastDate":""}'); }
+  catch(e){ return {count:0,lastDate:''}; }
+}
+function bumpStreakIfComplete(pid, isComplete){
+  if(!isComplete) return;
+  const todayStr = new Date().toDateString();
+  const streak = getStreak(pid);
+  if(streak.lastDate === todayStr) return;
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  streak.count = (streak.lastDate === yesterday.toDateString()) ? streak.count + 1 : 1;
+  streak.lastDate = todayStr;
+  localStorage.setItem('wk-streak-'+pid, JSON.stringify(streak));
+}
+
+/* ---- Whole-workout timer ---- */
+function timerKey(pid, dayLabel){
+  return `wk-timer-${pid}-${dayLabel}-${new Date().toDateString()}`;
+}
+function loadTimer(pid, dayLabel){
+  try{
+    const raw = localStorage.getItem(timerKey(pid, dayLabel));
+    if(raw) return JSON.parse(raw);
+  }catch(e){ /* ignore */ }
+  return {accumulated:0, runningSince:null, manuallyPaused:false};
+}
+function saveTimer(pid, dayLabel, t){
+  try{ localStorage.setItem(timerKey(pid, dayLabel), JSON.stringify(t)); }catch(e){ /* ignore */ }
+}
+function currentElapsed(t){
+  return t.accumulated + (t.runningSince ? (Date.now() - t.runningSince) / 1000 : 0);
+}
+function formatTime(sec){
+  sec = Math.floor(sec);
+  const m = Math.floor(sec/60);
+  const s = sec % 60;
+  return `${m}:${s.toString().padStart(2,'0')}`;
+}
+function startWorkoutTimerIfNeeded(){
+  const t = loadTimer(currentProgram, activeDay);
+  if(!t.runningSince && !t.manuallyPaused){
+    t.runningSince = Date.now();
+    saveTimer(currentProgram, activeDay, t);
+  }
+}
+function toggleWorkoutTimer(){
+  const t = loadTimer(currentProgram, activeDay);
+  if(t.runningSince){
+    t.accumulated += (Date.now() - t.runningSince) / 1000;
+    t.runningSince = null;
+    t.manuallyPaused = true;
+  } else {
+    t.runningSince = Date.now();
+    t.manuallyPaused = false;
+  }
+  saveTimer(currentProgram, activeDay, t);
+  const icon = document.getElementById('workoutTimerIcon');
+  if(icon) icon.textContent = t.runningSince ? '\u23F8' : '\u25B6';
+}
+function stopTimerIfComplete(pid, dayLabel, isComplete){
+  if(!isComplete) return;
+  const t = loadTimer(pid, dayLabel);
+  if(t.runningSince){
+    t.accumulated += (Date.now() - t.runningSince) / 1000;
+    t.runningSince = null;
+    saveTimer(pid, dayLabel, t);
+  }
+}
+// Live-updating display tick, independent of full re-renders
+setInterval(()=>{
+  if(!currentProgram || !activeDay) return;
+  const el = document.getElementById('workoutTimerText');
+  if(!el) return;
+  const t = loadTimer(currentProgram, activeDay);
+  el.textContent = formatTime(currentElapsed(t));
+}, 1000);
+
+/* ---- Swap exercise panel ---- */
+let swapSlotId = null;
+function openSwap(slotId, day){
+  swapSlotId = slotId;
+  const original = EX[slotId];
+  const alts = ALT_EXERCISES[slotId] || [];
+  const currentActive = getActiveId(day, slotId);
+
+  let optsHtml = '';
+  if(currentActive !== slotId){
+    optsHtml += `<button class="swap-option swap-revert" data-pick="${slotId}"><b>\u21a9 Use original: ${original.name}</b><span>Back to today's planned exercise.</span></button>`;
+  }
+  alts.forEach(altId=>{
+    if(altId === currentActive) return;
+    const alt = EX[altId];
+    optsHtml += `<button class="swap-option" data-pick="${altId}"><b>${alt.name}</b><span>${alt.spot}</span></button>`;
+  });
+  if(!optsHtml){ optsHtml = `<p style="font-size:12.5px;color:var(--sub);">No alternatives set up for this one yet.</p>`; }
+
+  document.getElementById('swapTitle').textContent = `Swap: ${original.name}`;
+  document.getElementById('swapOptions').innerHTML = optsHtml;
+  document.querySelectorAll('#swapOptions [data-pick]').forEach(btn=>{
+    btn.onclick = ()=> applySwap(slotId, btn.dataset.pick);
+  });
+  document.getElementById('swapOverlay').classList.add('open');
+}
+function applySwap(slotId, pickId){
+  const daySwaps = state[currentProgram][activeDay];
+  if(!daySwaps._swaps) daySwaps._swaps = {};
+  if(pickId === slotId){
+    delete daySwaps._swaps[slotId];
+    daySwaps[slotId] = new Array(EX[slotId].sets).fill(false);
+  } else {
+    daySwaps._swaps[slotId] = pickId;
+    daySwaps[slotId] = new Array(EX[pickId].sets).fill(false);
+  }
+  saveProgramState(currentProgram);
+  document.getElementById('swapOverlay').classList.remove('open');
+  render();
+}
+document.getElementById('closeSwap').onclick = ()=> document.getElementById('swapOverlay').classList.remove('open');
+document.getElementById('swapOverlay').onclick = (e)=>{ if(e.target.id==='swapOverlay') e.currentTarget.classList.remove('open'); };
+
+/* ---- Swap whole day (e.g. trade a rest day for a training day) ---- */
+function openDaySwap(posA){
+  const prog = PROGRAMS[currentProgram];
+  const dayA = dayAtPosition(currentProgram, posA);
+  document.getElementById('daySwapMeta').textContent = `Currently ${dayA.label}: ${dayA.tag} \u2014 ${dayA.focus}`;
+
+  let optsHtml = '';
+  for(let pos=0; pos<prog.days.length; pos++){
+    if(pos === posA) continue;
+    const d = dayAtPosition(currentProgram, pos);
+    optsHtml += `<button class="swap-option" data-pos="${pos}"><b>${d.label} \u2014 ${d.tag}</b><span>${d.focus}</span></button>`;
+  }
+  document.getElementById('daySwapOptions').innerHTML = optsHtml;
+  document.querySelectorAll('#daySwapOptions [data-pos]').forEach(btn=>{
+    btn.onclick = ()=> applyDaySwap(posA, parseInt(btn.dataset.pos));
+  });
+  document.getElementById('daySwapOverlay').classList.add('open');
+}
+function applyDaySwap(posA, posB){
+  swapDayPositions(currentProgram, posA, posB);
+  ensureDayStateInitialized(currentProgram, 'Day '+(posA+1));
+  ensureDayStateInitialized(currentProgram, 'Day '+(posB+1));
+  document.getElementById('daySwapOverlay').classList.remove('open');
+  render();
+}
+document.getElementById('closeDaySwap').onclick = ()=> document.getElementById('daySwapOverlay').classList.remove('open');
+document.getElementById('daySwapOverlay').onclick = (e)=>{ if(e.target.id==='daySwapOverlay') e.currentTarget.classList.remove('open'); };
+
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+function enterProgram(pid){
+  const prog = PROGRAMS[pid];
+  if(prog.locked) return;
+  currentProgram = pid;
+  loadProgramState(pid);
+  const idx = getRollingDayIndex(pid, prog.days.length);
+  activeDay = 'Day '+(idx+1);
+  render();
+}
+function exitProgram(){
+  currentProgram = null;
+  activeDay = null;
+  render();
+}
+
+/* =========================================================
+   RENDER: HOME
+   ========================================================= */
+function programCard(pid){
+  const p = PROGRAMS[pid];
+  if(p.locked){
+    return `<button class="prog-card locked" disabled>
+      <div class="prog-icon" style="background:${p.accent}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="white" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="white" stroke-width="2"/></svg></div>
+      <div class="prog-body"><h3>${p.title}</h3><p>${p.subtitle}</p></div>
+    </button>`;
+  }
+  return `<button class="prog-card" data-open="${pid}">
+    <div class="prog-icon" style="background:${p.accent}"><svg width="26" height="26" viewBox="0 0 24 24" fill="none">${p.homeIcon}</svg></div>
+    <div class="prog-body">
+      <h3>${p.title}</h3>
+      <p>${p.subtitle}</p>
+      <span class="prog-tag">${p.tagText} \u00b7 ${p.days.length}-day cycle</span>
+    </div>
+    <span class="chev">\u203a</span>
+  </button>`;
+}
+
+function renderHome(){
+  document.getElementById('headerTitle').textContent = 'TRAINING PROGRAMS';
+  document.getElementById('backBtn').style.display = 'none';
+  document.getElementById('dayTabs').innerHTML = '';
+  document.getElementById('fabRow').style.display = 'none';
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <p class="home-intro">Pick a program. Each one tracks its own days, sets, and streak separately.</p>
+    <div class="prog-grid">
+      ${Object.keys(PROGRAMS).map(programCard).join('')}
+    </div>
+  `;
+  app.querySelectorAll('[data-open]').forEach(btn=>{
+    btn.onclick = ()=> enterProgram(btn.dataset.open);
+  });
+}
+
+/* =========================================================
+   RENDER: PROGRAM VIEW
+   ========================================================= */
+function renderDayTabs(){
+  const prog = PROGRAMS[currentProgram];
+  const wrap = document.getElementById('dayTabs');
+  const positions = prog.days.map((_,pos)=>dayAtPosition(currentProgram, pos));
+  wrap.innerHTML = positions.map(d=>`
+    <button class="daytab ${d.label===activeDay?'active':''}" data-day="${d.label}">
+      <span class="d">${d.label}</span>${d.tag}
+    </button>`).join('');
+  wrap.querySelectorAll('[data-day]').forEach(btn=>{
+    btn.onclick = ()=>{ activeDay = btn.dataset.day; render(); };
+  });
+}
+
+function getActiveId(day, id){
+  const swaps = state[currentProgram][day.label]._swaps || {};
+  return swaps[id] || id;
+}
+
+function computeProgress(day){
+  let total=0, done=0;
+  day.ids.forEach(id=>{
+    state[currentProgram][day.label][id].forEach(v=>{ total++; if(v) done++; });
+  });
+  return {total, done};
+}
+
+function exerciseCard(id, day){
+  const activeId = getActiveId(day, id);
+  const ex = EX[activeId];
+  const cat = CATS[ex.cat];
+  const isSwapped = activeId !== id;
+  const jointHtml = ex.joint ? `<span class="joint ${ex.joint}"><span class="dot"></span>${ex.joint==='none'?'No knee load':'Light knee load'}</span>` : '';
+  const pipsHtml = state[currentProgram][day.label][id].map((v,i)=>
+    `<button class="pip ${v?'done':''}" data-ex="${id}" data-i="${i}" style="${v? 'background:'+cat.color+';border-color:'+cat.color+';':''}">${v?'\u2713':''}</button>`
+  ).join('');
+  const restSecs = ex.restSeconds || 60;
+
+  return `<div class="card">
+    <div class="iconbox">${iconSvg(activeId, 30)}</div>
+    <div class="content">
+      <div class="card-top">
+        <div>
+          <h3>${ex.name}</h3>
+          <div class="setsreps mono">${ex.sets} sets \u00d7 ${ex.reps}</div>
+          ${isSwapped ? `<span class="swapped-tag">Swapped in</span>` : ''}
+        </div>
+        ${jointHtml}
+      </div>
+      <div class="spot">${ex.spot}</div>
+      <div class="cue">${ex.cue}</div>
+      <div class="pips-row">
+        <div class="pips">${pipsHtml}</div>
+        <div style="display:flex;gap:6px;">
+          ${ex.timed ? `<button class="rest-btn hold-btn" data-hold="${id}" data-duration="${ex.holdSeconds}">Start ${ex.holdSeconds}s</button>` : ''}
+          ${ex.cat!=='cardio' && !ex.timed ? `<button class="rest-btn" data-rest="${id}" data-duration="${restSecs}">Rest ${restSecs}s</button>` : ''}
+          <button class="swap-btn" data-swap-slot="${id}">\u21c4 Swap</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderProgramView(){
+  const prog = PROGRAMS[currentProgram];
+  const day = dayAtPosition(currentProgram, posFromLabel(activeDay));
+  ensureDayStateInitialized(currentProgram, activeDay);
+
+  document.getElementById('headerTitle').textContent = prog.title.toUpperCase();
+  document.getElementById('backBtn').style.display = 'block';
+  document.getElementById('rulesLabel').textContent = prog.rulesLabel;
+  document.getElementById('fabRow').style.display = 'flex';
+  renderDayTabs();
+
+  const {total, done} = computeProgress(day);
+  const isComplete = total>0 && done===total;
+  bumpStreakIfComplete(currentProgram, isComplete);
+  stopTimerIfComplete(currentProgram, activeDay, isComplete);
+  const streak = getStreak(currentProgram);
+
+  const app = document.getElementById('app');
+  let html = '';
+
+  if(streak.count > 1){
+    html += `<div class="streak-pill">\uD83D\uDD25 ${streak.count}-day streak</div>`;
+  }
+
+  html += `<div class="focus-banner">
+    <span class="tag" style="background:${day.ids.length ? CATS[EX[day.ids[0]].cat].color : '#9AA6C4'}">${day.ids.length ? day.tag : 'Rest day'}</span>
+    <p>${day.focus}</p>
+  </div>`;
+
+  html += `<button class="swap-day-btn" id="swapDayBtn">\u{1F500} Swap this day with another</button>`;
+
+  if(day.ids.length){
+    const timer = loadTimer(currentProgram, activeDay);
+    html += `<button class="timer-badge" id="workoutTimerBadge">
+      <span class="tlabel">Workout time</span>
+      <span class="ticon" id="workoutTimerIcon">${timer.runningSince ? '\u23F8' : '\u25B6'}</span>
+      <span class="tval" id="workoutTimerText">${formatTime(currentElapsed(timer))}</span>
+    </button>`;
+
+    html += `<div class="progress-wrap">
+      <div class="progress-label"><span>Today's sets</span><span>${done} / ${total}</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:${total? (done/total*100):0}%;background:${prog.accent}"></div></div>
+    </div>`;
+
+    if(isComplete){
+      const finalTime = loadTimer(currentProgram, activeDay);
+      html += `<div class="celebrate">\uD83C\uDF89 Day complete! Finished in ${formatTime(currentElapsed(finalTime))}.</div>`;
+    }
+
+    let lastCat = null;
+    day.ids.forEach(id=>{
+      const activeId = getActiveId(day, id);
+      const ex = EX[activeId];
+      if(ex.cat !== lastCat){
+        html += `<div class="section-title">${CATS[ex.cat].label}</div>`;
+        lastCat = ex.cat;
+      }
+      html += exerciseCard(id, day);
+    });
+  } else {
+    html += `<div class="card" style="display:block;padding:18px;text-align:center;">
+      <div class="content" style="padding:6px;"><p style="margin:0;color:var(--sub);font-size:13px;">${day.restNote}</p></div>
+    </div>`;
+  }
+
+  app.innerHTML = html;
+  attachExerciseHandlers(day);
+  document.getElementById('swapDayBtn').onclick = ()=> openDaySwap(posFromLabel(activeDay));
+}
+
+function attachExerciseHandlers(day){
+  document.querySelectorAll('.pip').forEach(pip=>{
+    pip.onclick = ()=>{
+      const id = pip.dataset.ex;
+      const i = parseInt(pip.dataset.i);
+      const arr = state[currentProgram][activeDay][id];
+      const wasDone = arr[i];
+      arr[i] = !wasDone;
+      saveProgramState(currentProgram);
+
+      // Creative automation: the very first set you check off each day
+      // auto-starts the whole-workout timer.
+      startWorkoutTimerIfNeeded();
+
+      // Creative automation: auto-chain the rest timer the moment you
+      // check off a strength set, if more sets remain on that exercise.
+      const justCompleted = !wasDone;
+      const activeId = getActiveId(day, id);
+      const ex = EX[activeId];
+      const moreLeft = arr.some(v=>!v);
+      render();
+      if(justCompleted && moreLeft && ex.cat!=='cardio' && !ex.timed){
+        const btn = document.querySelector(`[data-rest="${id}"]`);
+        if(btn && !restTimers[id]) toggleRest(id, btn);
+      }
+    };
+  });
+  document.querySelectorAll('[data-rest]').forEach(btn=>{
+    btn.onclick = ()=> toggleRest(btn.dataset.rest, btn);
+  });
+  document.querySelectorAll('[data-hold]').forEach(btn=>{
+    btn.onclick = ()=> toggleHold(btn.dataset.hold, parseInt(btn.dataset.duration), btn);
+  });
+  document.querySelectorAll('[data-swap-slot]').forEach(btn=>{
+    btn.onclick = ()=> openSwap(btn.dataset.swapSlot, day);
+  });
+  const timerBadge = document.getElementById('workoutTimerBadge');
+  if(timerBadge){ timerBadge.onclick = toggleWorkoutTimer; }
+}
+
+function toggleHold(id, duration, btn){
+  if(holdTimers[id]){
+    clearInterval(holdTimers[id].interval);
+    delete holdTimers[id];
+    btn.textContent = `Start ${duration}s`;
+    btn.classList.remove('running');
+    return;
+  }
+  let remaining = duration;
+  btn.textContent = remaining + 's';
+  btn.classList.add('running');
+  holdTimers[id] = { interval: setInterval(()=>{
+    remaining--;
+    if(remaining<=0){
+      clearInterval(holdTimers[id].interval);
+      delete holdTimers[id];
+      if(navigator.vibrate) navigator.vibrate([150,80,150]);
+      const arr = state[currentProgram][activeDay][id];
+      if(arr){
+        const nextIdx = arr.findIndex(v=>!v);
+        if(nextIdx !== -1){ arr[nextIdx] = true; saveProgramState(currentProgram); }
+      }
+      render();
+    } else {
+      btn.textContent = remaining + 's';
+    }
+  }, 1000)};
+}
+
+function toggleRest(id, btn){
+  const duration = parseInt(btn.dataset.duration) || 60;
+  if(restTimers[id]){
+    clearInterval(restTimers[id].interval);
+    delete restTimers[id];
+    btn.textContent = `Rest ${duration}s`;
+    btn.classList.remove('running');
+    return;
+  }
+  let remaining = duration;
+  btn.textContent = remaining + 's';
+  btn.classList.add('running');
+  restTimers[id] = { interval: setInterval(()=>{
+    remaining--;
+    if(remaining<=0){
+      clearInterval(restTimers[id].interval);
+      delete restTimers[id];
+      btn.textContent = `Rest ${duration}s`;
+      btn.classList.remove('running');
+      if(navigator.vibrate) navigator.vibrate(200);
+    } else {
+      btn.textContent = remaining + 's';
+    }
+  }, 1000)};
+}
+
+/* =========================================================
+   MASTER RENDER
+   ========================================================= */
+function render(){
+  if(!currentProgram){ renderHome(); } else { renderProgramView(); }
+}
+
+/* =========================================================
+   RULES SHEET
+   ========================================================= */
+document.getElementById('openRules').onclick = ()=>{
+  document.getElementById('rulesContent').innerHTML = PROGRAMS[currentProgram].rulesHtml;
+  document.getElementById('overlay').classList.add('open');
+};
+document.getElementById('closeSheet').onclick = ()=> document.getElementById('overlay').classList.remove('open');
+document.getElementById('overlay').onclick = (e)=>{ if(e.target.id==='overlay') e.currentTarget.classList.remove('open'); };
+
+document.getElementById('backBtn').onclick = exitProgram;
+
+/* =========================================================
+   FLASHCARD "LEARN NAMES" MODE (scoped to current program)
+   ========================================================= */
+let flashList = [];
+let flashIndex = 0;
+let flashRevealed = false;
+
+function getProgramExIds(pid){
+  const seen = [];
+  PROGRAMS[pid].days.forEach(d=> (d.ids||[]).forEach(id=>{ if(!seen.includes(id)) seen.push(id); }));
+  return seen;
+}
+
+function renderFlash(){
+  const id = flashList[flashIndex];
+  const ex = EX[id];
+  document.getElementById('flashCounter').textContent = `${CATS[ex.cat].label} \u00b7 ${flashIndex+1} / ${flashList.length}`;
+  document.getElementById('flashIconBox').innerHTML = iconSvg(id, 52);
+
+  const body = document.getElementById('flashBody');
+  if(!flashRevealed){
+    body.innerHTML = `<p class="flash-hint">What exercise is this? Icon shows the movement direction.</p>
+      <button class="reveal-btn" id="revealBtn">Reveal</button>`;
+    document.getElementById('revealBtn').onclick = ()=>{ flashRevealed = true; renderFlash(); };
+  } else {
+    body.innerHTML = `<h2>${ex.name}</h2>
+      <div class="setsreps mono">${ex.sets} sets \u00d7 ${ex.reps}</div>
+      <div class="flash-detail"><div class="spot">${ex.spot}</div><div class="cue">${ex.cue}</div></div>`;
+  }
+
+  document.getElementById('flashBody').insertAdjacentHTML('beforeend', `
+    <div class="flash-nav">
+      <button class="nav-btn" id="flashPrev">\u2190 Prev</button>
+      <button class="nav-btn" id="flashNext">Next \u2192</button>
+    </div>`);
+  document.getElementById('flashPrev').onclick = ()=>{
+    flashIndex = (flashIndex - 1 + flashList.length) % flashList.length;
+    flashRevealed = false; renderFlash();
+  };
+  document.getElementById('flashNext').onclick = ()=>{
+    flashIndex = (flashIndex + 1) % flashList.length;
+    flashRevealed = false; renderFlash();
+  };
+}
+
+document.getElementById('openLearn').onclick = ()=>{
+  flashList = getProgramExIds(currentProgram);
+  flashIndex = 0; flashRevealed = false;
+  renderFlash();
+  document.getElementById('learnOverlay').classList.add('open');
+};
+document.getElementById('closeLearn').onclick = ()=> document.getElementById('learnOverlay').classList.remove('open');
+document.getElementById('learnOverlay').onclick = (e)=>{ if(e.target.id==='learnOverlay') e.currentTarget.classList.remove('open'); };
+
+/* =========================================================
+   BOOT
+   ========================================================= */
+document.getElementById('dateLabel').textContent = new Date().toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric'});
+render();
+</script>
+</body>
+</html>
