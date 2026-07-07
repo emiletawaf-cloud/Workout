@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>Training Programs</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect width=%2240%22 height=%2240%22 rx=%228%22 fill=%22%2314213B%22/><line x1=%2210%22 y1=%2220%22 x2=%2230%22 y2=%2220%22 stroke=%22%23E2603A%22 stroke-width=%224%22/><rect x=%226%22 y=%2214%22 width=%226%22 height=%2212%22 fill=%22%23E2603A%22/><rect x=%2228%22 y=%2214%22 width=%226%22 height=%2212%22 fill=%22%23E2603A%22/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 40 40%22><rect width=%2240%22 height=%2240%22 rx=%228%22 fill=%22%2314213B%22/><line x1=%2210%22 y1=%2220%22 x2=%2230%22 y2=%2220%22 stroke=%22%23E2603A%22 stroke-width=%224%22/><rect x=%226%22 y=%2214%22 width=%226%22 height=%2212%22 fill=%22%23E2603A%22/><rect x=%2228%22 y=%2214%22 width=%226%22 height=%2212%22 fill=%22%23E2603A%22/></svg>">
 <style>
   :root{
     --navy:#14213B; --navy-2:#1E2E52; --paper:#F6F3EC; --card:#FFFFFF;
@@ -118,6 +118,8 @@
 
   .rest-btn{font-size:11px;font-weight:700;border:none;background:var(--navy);color:#fff;
     padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .yt-btn{width:28px;height:28px;border-radius:50%;background:#D9342B;border:none;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;padding:0;}
   .rest-btn.running{background:var(--clay);}
   .hold-btn{background:var(--teal);}
   .hold-btn.running{background:var(--clay);}
@@ -917,6 +919,9 @@ function exerciseCard(id, day){
         <div style="display:flex;gap:6px;">
           ${ex.timed ? `<button class="rest-btn hold-btn" data-hold="${id}" data-duration="${ex.holdSeconds}">Start ${ex.holdSeconds}s</button>` : ''}
           ${ex.cat!=='cardio' && !ex.timed ? `<button class="rest-btn" data-rest="${id}" data-duration="${restSecs}">Rest ${restSecs}s</button>` : ''}
+          <button class="yt-btn" data-yt="${encodeURIComponent(ex.name + ' exercise tutorial')}" title="Watch how to do this">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+          </button>
           <button class="swap-btn" data-swap-slot="${id}">\u21c4 Swap</button>
         </div>
       </div>
@@ -1030,6 +1035,9 @@ function attachExerciseHandlers(day){
   document.querySelectorAll('[data-swap-slot]').forEach(btn=>{
     btn.onclick = ()=> openSwap(btn.dataset.swapSlot, day);
   });
+  document.querySelectorAll('[data-yt]').forEach(btn=>{
+    btn.onclick = ()=> window.open('https://www.youtube.com/results?search_query='+btn.dataset.yt, '_blank');
+  });
   const timerBadge = document.getElementById('workoutTimerBadge');
   if(timerBadge){ timerBadge.onclick = toggleWorkoutTimer; }
 }
@@ -1043,7 +1051,7 @@ function toggleHold(id, duration, btn){
     return;
   }
   let remaining = duration;
-  btn.textContent = remaining + 's';
+  btn.textContent = remaining + 's \u2715';
   btn.classList.add('running');
   holdTimers[id] = { interval: setInterval(()=>{
     remaining--;
@@ -1058,7 +1066,7 @@ function toggleHold(id, duration, btn){
       }
       render();
     } else {
-      btn.textContent = remaining + 's';
+      btn.textContent = remaining + 's \u2715';
     }
   }, 1000)};
 }
@@ -1073,7 +1081,7 @@ function toggleRest(id, btn){
     return;
   }
   let remaining = duration;
-  btn.textContent = remaining + 's';
+  btn.textContent = remaining + 's \u2715';
   btn.classList.add('running');
   restTimers[id] = { interval: setInterval(()=>{
     remaining--;
@@ -1084,7 +1092,7 @@ function toggleRest(id, btn){
       btn.classList.remove('running');
       if(navigator.vibrate) navigator.vibrate(200);
     } else {
-      btn.textContent = remaining + 's';
+      btn.textContent = remaining + 's \u2715';
     }
   }, 1000)};
 }
