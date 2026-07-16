@@ -123,6 +123,10 @@
     letter-spacing:0.04em;padding-top:2px;}
   .meal-row .mtext{flex:1;font-size:13px;line-height:1.5;}
 
+  .side-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap;}
+  .side-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;
+    color:var(--sub);flex:0 0 34px;}
+
   .section-title{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--sub);
     font-weight:800;margin:22px 0 8px 2px;}
 
@@ -343,7 +347,7 @@ const EX = {
   deadbug: {name:'Dead bug', cat:'core', reps:'10 reps / side', sets:3, cue:'Lower back stays pressed into the floor throughout.', move:'cross', spot:'No machine \u2014 lying on your back, opposite arm and leg extend out slowly.'},
   woodchop: {name:'Cable woodchop', cat:'core', reps:'12 reps / side', sets:3, cue:'Rotate from the torso, feet stay planted.', move:'rotate', spot:'Cable pulley set high or low, pulled diagonally across your body while feet stay still.'},
   bird_dog: {name:'Bird dog', cat:'core', reps:'10 reps / side', sets:3, cue:'Keep hips square to the floor, extend slowly, don\u2019t let the low back arch.', move:'cross', spot:'On hands and knees, extend one arm and the opposite leg out straight, hold, then switch.'},
-  balance_stance: {name:'Single-leg balance', cat:'core', reps:'30 sec / side', sets:3, cue:'Soft knee on the standing leg, eyes forward \u2014 hold a rail at first if you need to.', move:'balance', spot:'Stand on one leg near a wall or rail for support if needed; work toward not needing to hold on.', timed:true, holdSeconds:30},
+  balance_stance: {name:'Single-leg balance', cat:'core', reps:'30 sec / side', sets:3, cue:'Soft knee on the standing leg, eyes forward \u2014 hold a rail at first if you need to.', move:'balance', spot:'Stand on one leg near a wall or rail for support if needed; work toward not needing to hold on.', timed:true, holdSeconds:30, perSide:true},
   kneeraise: {name:'Hanging knee raises', cat:'core', reps:'to near failure', sets:3, cue:'Curl the pelvis upward at the top; avoid swinging.', move:'legUp', spot:'Hanging from a bar (or braced in a captain\u2019s chair), curl your knees up toward your chest.'},
   cablecrunch: {name:'Kneeling cable crunches', cat:'core', reps:'12\u201315 reps', sets:3, cue:'Move from the spine, not the hips; exhale hard at the bottom.', move:'pushDown', spot:'Kneeling below a high cable, hold the rope beside your head and crunch your ribs down toward your pelvis.'},
 
@@ -369,7 +373,7 @@ const EX = {
   facepull: {name:'Cable face pulls', cat:'upper', reps:'15 reps', sets:3, cue:'Pull the rope apart toward your ears, pause 1 second, elbows high.', move:'pullIn', spot:'Pulley set at upper-chest height with a rope attachment \u2014 pull it toward your face, elbows flaring out.'},
   reardelt: {name:'Bent-over rear delt flyes', cat:'upper', reps:'15 reps', sets:3, cue:'Chest close to parallel with the floor, tiny bend in the elbows, lead with the pinkies.', move:'outDouble', spot:'Hinged forward at the hips holding light dumbbells, raise them out to the sides like wings.'},
 
-  // ---- Bodyweight (Home Workout / Healthy Mommy, no equipment) ----
+  // ---- Bodyweight (Home Workout / Beginners / Calisthenics, no equipment) ----
   pushup: {name:'Push-ups', cat:'upper', reps:'8\u201315 reps', sets:3, cue:'Body in one straight line, elbows at ~45\u00b0, chest to just above the floor.', move:'pushOut', spot:'No equipment \u2014 hands under shoulders, knees down for an easier version if needed.'},
   tricep_dip_chair: {name:'Chair tricep dips', cat:'upper', reps:'10\u201312 reps', sets:3, cue:'Keep hips close to the chair, bend elbows to ~90\u00b0, don\u2019t let shoulders creep up to your ears.', move:'pushDown', spot:'Hands on the edge of a sturdy chair or couch behind you, lower and press your body up.'},
   pike_pushup: {name:'Pike push-ups', cat:'upper', reps:'8\u201312 reps', sets:3, cue:'Hips high, look toward your feet, lower the top of your head toward the floor.', move:'pushUp', spot:'No equipment \u2014 hips lifted high in an inverted-V position, hands and feet on the floor.'},
@@ -382,6 +386,14 @@ const EX = {
   high_knees: {name:'High knees', cat:'cardio', reps:'30\u201345 sec', sets:1, cue:'Drive the knees up toward hip height, stay light on your feet.', move:'arc', spot:'No equipment \u2014 run in place, driving your knees up high and fast.', restSeconds:30},
   mountain_climbers: {name:'Mountain climbers', cat:'cardio', reps:'30\u201345 sec', sets:1, cue:'Keep the hips low and level, drive knees toward the chest quickly.', move:'cross', spot:'No equipment \u2014 in a plank position, alternate driving knees toward your chest.', restSeconds:30},
   burpees: {name:'Burpees', cat:'cardio', reps:'8\u201312 reps', sets:1, cue:'Chest to the floor on the push-up, explode up into the jump.', move:'squat', spot:'No equipment \u2014 squat, kick back to a plank, push-up, jump feet in, jump up.', restSeconds:30},
+
+  // ---- Calisthenics (bodyweight strength & skill progressions) ----
+  diamond_pushup: {name:'Diamond push-ups', cat:'upper', reps:'6\u201310 reps', sets:3, cue:'Thumbs and index fingers form a triangle under your chest \u2014 targets the triceps hard.', move:'pushOut', spot:'No equipment \u2014 harder push-up variation with hands close together under the chest.'},
+  hollow_body_hold: {name:'Hollow body hold', cat:'core', reps:'20\u201330 sec', sets:3, cue:'Lower back pressed flat into the floor, arms and legs extended, ribs down.', move:'hold', spot:'No equipment \u2014 lying on your back, lift shoulders and legs slightly off the floor into a shallow \u201cbanana\u201d shape.', timed:true, holdSeconds:25},
+  wall_handstand: {name:'Wall handstand hold', cat:'upper', reps:'15\u201330 sec', sets:3, cue:'Squeeze the whole body tight, push the floor away through straight arms. Come down with control, never drop.', move:'hold', spot:'No equipment \u2014 kick up into a handstand against a wall, back or chest facing it, and hold.', timed:true, holdSeconds:20},
+  l_sit_progression: {name:'L-sit progression', cat:'core', reps:'10\u201320 sec', sets:3, cue:'Push down through the hands, legs straight out in front, chest tall.', move:'hold', spot:'No equipment \u2014 hands on the floor or two sturdy chairs, lift hips and legs off the ground.', timed:true, holdSeconds:15},
+  pistol_squat_progression: {name:'Pistol squat progression', cat:'lower', reps:'5\u20138 reps / side', sets:3, cue:'Hold onto a door frame or chair for balance at first \u2014 depth comes with practice, not force.', move:'squat', spot:'No equipment \u2014 single-leg squat, other leg extended straight out in front. Use a box or chair to sit onto if full range isn\u2019t there yet.', perSide:true},
+
 };
 
 
@@ -433,13 +445,22 @@ const HOME_RULES = `
   <div class="rule"><b>Floor space only:</b> roughly 2m x 2m is all you need for the whole program.</div>
 `;
 
-const MOMMY_RULES = `
+const BEGINNER_RULES = `
   <h2>Program rules</h2>
   <div class="rule"><b>Built for short windows:</b> every session is designed to fit in 15\u201320 minutes.</div>
   <div class="rule"><b>Consistency over intensity:</b> 3 short sessions a week beats one long one you can\u2019t sustain.</div>
-  <div class="rule"><b>If postpartum:</b> get clearance from your doctor before starting, especially for core work.</div>
+  <div class="rule"><b>New to training, or coming back after a long break?</b> Get clearance from your doctor first if you have any health concerns.</div>
   <div class="rule"><b>Shorter rest is normal here</b> \u2014 30 seconds between moves keeps sessions quick without rushing form.</div>
   <div class="rule"><b>Any consistent movement counts</b> \u2014 missed a day? Just pick back up, no need to make it up.</div>
+`;
+
+const CALISTHENICS_RULES = `
+  <h2>Program rules</h2>
+  <div class="rule"><b>Progress the movement, not just the reps:</b> once a variation feels easy for 3 sets of 12+, move to the harder progression instead of just adding reps.</div>
+  <div class="rule"><b>Master the basics first:</b> full-range push-ups and a solid plank should feel controlled before chasing handstands or pistol squats.</div>
+  <div class="rule"><b>Warm up wrists and shoulders</b> before push/handstand work \u2014 they take more load here than in machine training.</div>
+  <div class="rule"><b>Quality over ego:</b> a strict half-range pistol squat beats a sloppy full-range one holding onto furniture.</div>
+  <div class="rule"><b>A pull-up bar helps but isn\u2019t required</b> \u2014 every session here can be done with just floor space, a wall, and a sturdy chair.</div>
 `;
 
 
@@ -487,7 +508,7 @@ const PROGRAMS = {
     ]
   },
   sa7el: {
-    title:'Formet El Sa7el 🍋', subtitle:'5-day push / pull / shoulders / legs \u2014 beach-ready',
+    title:'Formet El Sa7el', subtitle:'5-day push / pull / shoulders / legs \u2014 beach-ready',
     accent:'#F0A737', tagText:'No injuries', rulesLabel:'Program rules', rulesHtml:SA7EL_RULES,
     homeIcon:`<path d="M4 16 Q8 12 12 16 T20 16" stroke="white" stroke-width="2.2" fill="none"/><path d="M4 20 Q8 16 12 20 T20 20" stroke="white" stroke-width="2.2" fill="none"/><circle cx="17" cy="7" r="3" fill="white"/>`,
     days:[
@@ -514,10 +535,10 @@ const PROGRAMS = {
       {label:'Day 7', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Your muscles rebuild during the days off, not the workout itself.'},
     ]
   },
-  mommy: {
-    title:'Healthy Mommy', subtitle:'Quick, efficient full-body sessions for busy schedules',
-    accent:'#C9667A', tagText:'15\u201320 min sessions', rulesLabel:'Program rules', rulesHtml:MOMMY_RULES,
-    homeIcon:`<path d="M12 19 C7 15 4 12 4 8.5 A3.5 3.5 0 0 1 12 7 A3.5 3.5 0 0 1 20 8.5 C20 12 17 15 12 19 Z" fill="white"/>`,
+  beginners: {
+    title:'Beginners Workout', subtitle:'Quick, efficient full-body sessions to get started',
+    accent:'#C9667A', tagText:'15\u201320 min sessions', rulesLabel:'Program rules', rulesHtml:BEGINNER_RULES,
+    homeIcon:`<circle cx="12" cy="8" r="3.2" fill="white"/><path d="M6 20 C6 15 8.5 12.5 12 12.5 C15.5 12.5 18 15 18 20" stroke="white" stroke-width="2.2" fill="none"/>`,
     days:[
       {label:'Day 1', focus:'Full-body circuit \u2014 about 20 min', tag:'Circuit A', ids:['squat_bw','pushup','plank','glutebridge']},
       {label:'Day 2', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Short and consistent beats long and occasional.'},
@@ -526,6 +547,20 @@ const PROGRAMS = {
       {label:'Day 5', focus:'Full-body circuit \u2014 about 20 min', tag:'Circuit B', ids:['lunge_bw','table_row','bird_dog','wall_sit']},
       {label:'Day 6', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day.'},
       {label:'Day 7', focus:'Full-body circuit \u2014 about 20 min', tag:'Circuit C', ids:['squat_bw','tricep_dip_chair','deadbug','glutebridge']},
+    ]
+  },
+  calisthenics: {
+    title:'Calisthenics', subtitle:'Bodyweight strength & skill progressions, no equipment',
+    accent:'#B08D57', tagText:'No equipment', rulesLabel:'Program rules', rulesHtml:CALISTHENICS_RULES,
+    homeIcon:`<circle cx="12" cy="5" r="2.4" fill="white"/><path d="M12 7.5 V14 M12 14 L7 12 M12 14 L17 12 M12 14 L8 20 M12 14 L16 20" stroke="white" stroke-width="2" fill="none"/>`,
+    days:[
+      {label:'Day 1', focus:'Push skills', tag:'Push', ids:['pushup','diamond_pushup','pike_pushup','tricep_dip_chair']},
+      {label:'Day 2', focus:'Pull & core', tag:'Pull + core', ids:['table_row','hollow_body_hold','plank','superman']},
+      {label:'Day 3', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Skill work needs fresh joints as much as strength work does.'},
+      {label:'Day 4', focus:'Legs & balance', tag:'Legs', ids:['squat_bw','lunge_bw','pistol_squat_progression','wall_sit','calfraise']},
+      {label:'Day 5', focus:'Skill practice', tag:'Skills', ids:['wall_handstand','l_sit_progression','hollow_body_hold','plank']},
+      {label:'Day 6', focus:'Full-body flow', tag:'Flow', ids:['pushup','squat_bw','table_row','mountain_climbers','plank']},
+      {label:'Day 7', focus:'Rest', tag:'Rest', ids:[], restNote:'Rest day. Skill work needs fresh joints as much as strength work does.'},
     ]
   },
 };
@@ -781,11 +816,11 @@ const ALT_EXERCISES = {
   inclinewalk:['elliptical','bike'],
   stairmaster:['elliptical','bike'],
   rowing_intervals:['bike','elliptical'],
-  pushup:['pike_pushup','tricep_dip_chair'],
+  pushup:['pike_pushup','tricep_dip_chair','diamond_pushup'],
   tricep_dip_chair:['pushup'],
   pike_pushup:['pushup'],
   table_row:['pushup'],
-  squat_bw:['lunge_bw','wall_sit'],
+  squat_bw:['lunge_bw','wall_sit','pistol_squat_progression'],
   lunge_bw:['squat_bw','wall_sit'],
   wall_sit:['squat_bw'],
   superman:['bird_dog'],
@@ -793,6 +828,11 @@ const ALT_EXERCISES = {
   high_knees:['jumping_jacks','mountain_climbers'],
   mountain_climbers:['high_knees','burpees'],
   burpees:['mountain_climbers','jumping_jacks'],
+  diamond_pushup:['pushup','pike_pushup'],
+  hollow_body_hold:['plank','l_sit_progression'],
+  wall_handstand:['pike_pushup','pushup'],
+  l_sit_progression:['hollow_body_hold','plank'],
+  pistol_squat_progression:['squat_bw','lunge_bw'],
 };
 
 /* =========================================================
@@ -850,6 +890,13 @@ function posFromLabel(label){
   return parseInt(label.split(' ')[1], 10) - 1;
 }
 
+function makeSlotState(exId){
+  const ex = EX[exId];
+  return ex.perSide
+    ? {left: new Array(ex.sets).fill(false), right: new Array(ex.sets).fill(false)}
+    : new Array(ex.sets).fill(false);
+}
+
 function initProgramState(pid){
   const prog = PROGRAMS[pid];
   state[pid] = {};
@@ -857,7 +904,7 @@ function initProgramState(pid){
     const d = dayAtPosition(pid, pos);
     state[pid][d.label] = {};
     d.ids.forEach(id=>{
-      state[pid][d.label][id] = new Array(EX[id].sets).fill(false);
+      state[pid][d.label][id] = makeSlotState(id);
     });
     state[pid][d.label]._swaps = {};
   }
@@ -869,7 +916,7 @@ function ensureDayStateInitialized(pid, positionLabel){
   if(!state[pid][positionLabel]) state[pid][positionLabel] = {};
   d.ids.forEach(id=>{
     if(!state[pid][positionLabel][id]){
-      state[pid][positionLabel][id] = new Array(EX[id].sets).fill(false);
+      state[pid][positionLabel][id] = makeSlotState(id);
     }
   });
   if(!state[pid][positionLabel]._swaps) state[pid][positionLabel]._swaps = {};
@@ -1000,10 +1047,10 @@ function applySwap(slotId, pickId){
   if(!daySwaps._swaps) daySwaps._swaps = {};
   if(pickId === slotId){
     delete daySwaps._swaps[slotId];
-    daySwaps[slotId] = new Array(EX[slotId].sets).fill(false);
+    daySwaps[slotId] = makeSlotState(slotId);
   } else {
     daySwaps._swaps[slotId] = pickId;
-    daySwaps[slotId] = new Array(EX[pickId].sets).fill(false);
+    daySwaps[slotId] = makeSlotState(pickId);
   }
   saveProgramState(currentProgram);
   document.getElementById('swapOverlay').classList.remove('open');
@@ -1159,7 +1206,13 @@ function getActiveId(day, id){
 function computeProgress(day){
   let total=0, done=0;
   day.ids.forEach(id=>{
-    state[currentProgram][day.label][id].forEach(v=>{ total++; if(v) done++; });
+    const slot = state[currentProgram][day.label][id];
+    if(Array.isArray(slot)){
+      slot.forEach(v=>{ total++; if(v) done++; });
+    } else {
+      slot.left.forEach(v=>{ total++; if(v) done++; });
+      slot.right.forEach(v=>{ total++; if(v) done++; });
+    }
   });
   return {total, done};
 }
@@ -1170,10 +1223,43 @@ function exerciseCard(id, day){
   const cat = CATS[ex.cat];
   const isSwapped = activeId !== id;
   const jointHtml = ex.joint ? `<span class="joint ${ex.joint}"><span class="dot"></span>${ex.joint==='none'?'No knee load':'Light knee load'}</span>` : '';
-  const pipsHtml = state[currentProgram][day.label][id].map((v,i)=>
-    `<button class="pip ${v?'done':''}" data-ex="${id}" data-i="${i}" style="${v? 'background:'+cat.color+';border-color:'+cat.color+';':''}">${v?'\u2713':''}</button>`
-  ).join('');
   const restSecs = ex.restSeconds || 60;
+  const slot = state[currentProgram][day.label][id];
+
+  function pipsFor(arr, side){
+    return arr.map((v,i)=>
+      `<button class="pip ${v?'done':''}" data-ex="${id}" data-side="${side||''}" data-i="${i}" style="${v? 'background:'+cat.color+';border-color:'+cat.color+';':''}">${v?'\u2713':''}</button>`
+    ).join('');
+  }
+  function timerBtn(side){
+    const sideAttr = side ? ` data-side="${side}"` : '';
+    if(ex.timed) return `<button class="rest-btn hold-btn" data-hold="${id}"${sideAttr} data-duration="${ex.holdSeconds}">Start ${ex.holdSeconds}s</button>`;
+    if(ex.cat!=='cardio') return `<button class="rest-btn" data-rest="${id}"${sideAttr} data-duration="${restSecs}">Rest ${restSecs}s</button>`;
+    return '';
+  }
+
+  let setsBlockHtml;
+  if(ex.perSide){
+    setsBlockHtml = `
+      <div class="side-row">
+        <div class="side-label">Left</div>
+        <div class="pips">${pipsFor(slot.left,'left')}</div>
+        ${timerBtn('left')}
+      </div>
+      <div class="side-row">
+        <div class="side-label">Right</div>
+        <div class="pips">${pipsFor(slot.right,'right')}</div>
+        ${timerBtn('right')}
+      </div>
+    `;
+  } else {
+    setsBlockHtml = `
+      <div class="pips-row">
+        <div class="pips">${pipsFor(slot)}</div>
+        <div style="display:flex;gap:6px;">${timerBtn()}</div>
+      </div>
+    `;
+  }
 
   return `<div class="card">
     <div class="iconbox">${iconSvg(activeId, 30)}</div>
@@ -1188,16 +1274,12 @@ function exerciseCard(id, day){
       </div>
       <div class="spot">${ex.spot}</div>
       <div class="cue">${ex.cue}</div>
-      <div class="pips-row">
-        <div class="pips">${pipsHtml}</div>
-        <div style="display:flex;gap:6px;">
-          ${ex.timed ? `<button class="rest-btn hold-btn" data-hold="${id}" data-duration="${ex.holdSeconds}">Start ${ex.holdSeconds}s</button>` : ''}
-          ${ex.cat!=='cardio' && !ex.timed ? `<button class="rest-btn" data-rest="${id}" data-duration="${restSecs}">Rest ${restSecs}s</button>` : ''}
-          <button class="yt-btn" data-yt="${encodeURIComponent(ex.name + ' exercise tutorial')}" title="Watch how to do this">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-          </button>
-          <button class="swap-btn" data-swap-slot="${id}">\u21c4 Swap</button>
-        </div>
+      ${setsBlockHtml}
+      <div class="pips-row" style="justify-content:flex-end;">
+        <button class="yt-btn" data-yt="${encodeURIComponent(ex.name + ' exercise tutorial')}" title="Watch how to do this">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="swap-btn" data-swap-slot="${id}">\u21c4 Swap</button>
       </div>
     </div>
   </div>`;
@@ -1277,8 +1359,10 @@ function attachExerciseHandlers(day){
   document.querySelectorAll('.pip').forEach(pip=>{
     pip.onclick = ()=>{
       const id = pip.dataset.ex;
+      const side = pip.dataset.side || null;
       const i = parseInt(pip.dataset.i);
-      const arr = state[currentProgram][activeDay][id];
+      const slot = state[currentProgram][activeDay][id];
+      const arr = side ? slot[side] : slot;
       const wasDone = arr[i];
       arr[i] = !wasDone;
       saveProgramState(currentProgram);
@@ -1295,16 +1379,18 @@ function attachExerciseHandlers(day){
       const moreLeft = arr.some(v=>!v);
       render();
       if(justCompleted && moreLeft && ex.cat!=='cardio' && !ex.timed){
-        const btn = document.querySelector(`[data-rest="${id}"]`);
-        if(btn && !restTimers[id]) toggleRest(id, btn);
+        const selector = side ? `[data-rest="${id}"][data-side="${side}"]` : `[data-rest="${id}"]:not([data-side])`;
+        const btn = document.querySelector(selector);
+        const timerKey2 = side ? `${id}_${side}` : id;
+        if(btn && !restTimers[timerKey2]) toggleRest(id, btn, side);
       }
     };
   });
   document.querySelectorAll('[data-rest]').forEach(btn=>{
-    btn.onclick = ()=> toggleRest(btn.dataset.rest, btn);
+    btn.onclick = ()=> toggleRest(btn.dataset.rest, btn, btn.dataset.side || null);
   });
   document.querySelectorAll('[data-hold]').forEach(btn=>{
-    btn.onclick = ()=> toggleHold(btn.dataset.hold, parseInt(btn.dataset.duration), btn);
+    btn.onclick = ()=> toggleHold(btn.dataset.hold, parseInt(btn.dataset.duration), btn, btn.dataset.side || null);
   });
   document.querySelectorAll('[data-swap-slot]').forEach(btn=>{
     btn.onclick = ()=> openSwap(btn.dataset.swapSlot, day);
@@ -1316,10 +1402,11 @@ function attachExerciseHandlers(day){
   if(timerBadge){ timerBadge.onclick = toggleWorkoutTimer; }
 }
 
-function toggleHold(id, duration, btn){
-  if(holdTimers[id]){
-    clearInterval(holdTimers[id].interval);
-    delete holdTimers[id];
+function toggleHold(id, duration, btn, side){
+  const key = side ? `${id}_${side}` : id;
+  if(holdTimers[key]){
+    clearInterval(holdTimers[key].interval);
+    delete holdTimers[key];
     btn.textContent = `Start ${duration}s`;
     btn.classList.remove('running');
     return;
@@ -1327,13 +1414,14 @@ function toggleHold(id, duration, btn){
   let remaining = duration;
   btn.textContent = remaining + 's \u2715';
   btn.classList.add('running');
-  holdTimers[id] = { interval: setInterval(()=>{
+  holdTimers[key] = { interval: setInterval(()=>{
     remaining--;
     if(remaining<=0){
-      clearInterval(holdTimers[id].interval);
-      delete holdTimers[id];
+      clearInterval(holdTimers[key].interval);
+      delete holdTimers[key];
       if(navigator.vibrate) navigator.vibrate([150,80,150]);
-      const arr = state[currentProgram][activeDay][id];
+      const slot = state[currentProgram][activeDay][id];
+      const arr = side ? slot[side] : slot;
       if(arr){
         const nextIdx = arr.findIndex(v=>!v);
         if(nextIdx !== -1){ arr[nextIdx] = true; saveProgramState(currentProgram); }
@@ -1345,11 +1433,12 @@ function toggleHold(id, duration, btn){
   }, 1000)};
 }
 
-function toggleRest(id, btn){
+function toggleRest(id, btn, side){
+  const key = side ? `${id}_${side}` : id;
   const duration = parseInt(btn.dataset.duration) || 60;
-  if(restTimers[id]){
-    clearInterval(restTimers[id].interval);
-    delete restTimers[id];
+  if(restTimers[key]){
+    clearInterval(restTimers[key].interval);
+    delete restTimers[key];
     btn.textContent = `Rest ${duration}s`;
     btn.classList.remove('running');
     return;
@@ -1357,11 +1446,11 @@ function toggleRest(id, btn){
   let remaining = duration;
   btn.textContent = remaining + 's \u2715';
   btn.classList.add('running');
-  restTimers[id] = { interval: setInterval(()=>{
+  restTimers[key] = { interval: setInterval(()=>{
     remaining--;
     if(remaining<=0){
-      clearInterval(restTimers[id].interval);
-      delete restTimers[id];
+      clearInterval(restTimers[key].interval);
+      delete restTimers[key];
       btn.textContent = `Rest ${duration}s`;
       btn.classList.remove('running');
       if(navigator.vibrate) navigator.vibrate(200);
