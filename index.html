@@ -383,6 +383,15 @@
 
   .daytab.today .d::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--clay);margin-left:5px;vertical-align:middle;animation:pulse-dot 1.4s ease-in-out infinite;}
   .float-emoji{display:block;font-size:34px;margin-bottom:6px;animation:bob 3s ease-in-out infinite;}
+  .app-ver{font-size:10px;color:var(--sub);text-align:center;margin:14px 0 10px;letter-spacing:.04em;}
+  .remote-note{font-size:11.5px;color:var(--sub);margin:-6px 2px 14px 2px;line-height:1.5;}
+  .quiz-option.multi{display:flex;align-items:center;gap:12px;}
+  .qbox{flex:0 0 22px;width:22px;height:22px;border-radius:7px;border:2px solid var(--line);display:flex;
+    align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;background:var(--card);}
+  .quiz-option.selected .qbox{background:var(--clay);border-color:var(--clay);}
+  .quiz-next{display:block;width:100%;margin-top:14px;padding:14px;border:none;border-radius:12px;background:var(--navy);
+    color:#fff;font-weight:800;font-size:14px;cursor:pointer;}
+  .quiz-next:disabled{opacity:.4;cursor:default;}
 </style>
 </head>
 <body>
@@ -783,13 +792,18 @@ const QUIZ_QUESTIONS = [
   {key:'days', q:'How many days a week can you realistically train?', opts:['2 days','3 days','4 days','5+ days']},
   {key:'time', q:'How much time do you have per session?', opts:['15\u201320 min','30\u201345 min','45\u201360+ min']},
   {key:'equipment', q:'What equipment do you have access to?', opts:['Full gym','Home, some dumbbells','No equipment at all']},
-  {key:'injury', q:'Any current injuries or joint issues?', opts:['None','Knee issue','Back, shoulder, or other issue']},
-  {key:'goal', q:'What\u2019s your main goal?', opts:['Fat loss','Muscle & strength','General fitness','Toning & shape']},
+  {key:'injury', q:'Any current injuries or joint issues?', multi:true, exclusive:'None', opts:['None','Knee issue','Back, shoulder, or other issue']},
+  {key:'goal', q:'What are your goals?', multi:true, opts:['Fat loss','Muscle & strength','General fitness','Toning & shape']},
   {key:'experience', q:'How would you describe your training experience?', opts:['Beginner','Intermediate','Advanced']},
-  {key:'focus', q:'How do you want sessions structured?', opts:['Full body each time','Upper body priority','Lower body priority','Core & cardio priority']},
+  {key:'focus', q:'How do you want sessions structured?', multi:true, opts:['Full body each time','Upper body priority','Lower body priority','Core & cardio priority']},
   {key:'cardio', q:'How do you feel about cardio?', opts:['Love it \u2014 give me more','Neutral, some is fine','Not a fan \u2014 minimize it']},
   {key:'gender', q:'Gender (optional \u2014 kept for our records only, it doesn\u2019t change your plan)', opts:['Female','Male','Prefer not to say']},
 ];
+
+// Answers can be a single string (older saves / single-pick questions) or a list (multi-select)
+const OTHER_INJURY = 'Back, shoulder, or other issue';
+function asArr(v){ return Array.isArray(v) ? v : (v ? [v] : []); }
+function hasOtherInjury(a){ return asArr(a && a.injury).includes(OTHER_INJURY); }
 
 const POOLS = {
   machineUpper: ['chestpress','latpull','seatedrow','shoulderpress','bicep','tricep','flatbench','inclinepress','cableflye','chestdip','pushdown_rope','ohext','skullcrusher','dbrow','pecdeckrear','inclinecurl','hammercurl','cablecurl','shoulderpress_db','lateralraise','facepull','reardelt'],
@@ -838,12 +852,14 @@ function pickRotating(pool, n, offset, exclude){
 }
 
 function buildCustomProgram(a){
+  const goals = asArr(a.goal), injuries = asArr(a.injury), focuses = asArr(a.focus);
+  const goalText = goals.join(' + ') || 'General fitness';
   const days = parseInt(a.days); // 2,3,4,5
   const perDayMap = {'15\u201320 min':3, '30\u201345 min':5, '45\u201360+ min':7};
   let perDay = perDayMap[a.time] || 5;
   if(a.experience === 'Beginner') perDay = Math.min(perDay, 5);
 
-  const isKnee = a.injury === 'Knee issue';
+  const isKnee = injuries.includes('Knee issue');
   const noEquip = a.equipment === 'No equipment at all';
   const is50plus = a.age === '50+';
   const avoidCardio = a.cardio === 'Not a fan \u2014 minimize it';
@@ -870,7 +886,7 @@ function buildCustomProgram(a){
   }
 
   // Reorder pools by goal (compounds first for strength, otherwise leave as-is)
-  if(a.goal === 'Muscle & strength'){
+  if(goals.includes('Muscle & strength')){
     const priority = ['legpress_full','rdl','goblet_squat','flatbench','chestpress','latpull','seatedrow'];
     lowerPool = [...lowerPool].sort((x,y)=>{
       const rx = priority.includes(x) ? priority.indexOf(x) : 999;
@@ -880,11 +896,18 @@ function buildCustomProgram(a){
   }
 
   // Decide session "type" rotation based on focus
-  let rotation;
-  if(a.focus === 'Full body each time') rotation = ['full'];
-  else if(a.focus === 'Upper body priority') rotation = ['upper','lower','upper'];
-  else if(a.focus === 'Lower body priority') rotation = ['lower','upper','lower'];
-  else rotation = ['cardio','full','core'];
+  // One rotation per chosen focus; with several, interleave them so each gets airtime
+  const ROT = {
+    'Full body each time':['full'],
+    'Upper body priority':['upper','lower','upper'],
+    'Lower body priority':['lower','upper','lower'],
+    'Core & cardio priority':['cardio','full','core'],
+  };
+  let lists = focuses.map(f=>ROT[f]).filter(Boolean);
+  if(!lists.length) lists = [ROT['Core & cardio priority']];
+  let rotation = [];
+  const longest = Math.max.apply(null, lists.map(l=>l.length));
+  for(let k=0; k<longest; k++) lists.forEach(l=>{ if(k < l.length) rotation.push(l[k]); });
 
   if(loveCardio && !rotation.includes('cardio')) rotation = [...rotation, 'cardio'];
 
@@ -942,7 +965,7 @@ function buildCustomProgram(a){
   const rulesHtml = `
     <h2>Your plan logic</h2>
     <p class="meta">Generated from your answers \u2014 not a substitute for a coach or physical therapist.</p>
-    <div class="rule"><b>Goal:</b> ${a.goal} \u00b7 <b>Experience:</b> ${a.experience} \u00b7 <b>Equipment:</b> ${a.equipment}</div>
+    <div class="rule"><b>Goal:</b> ${goalText} \u00b7 <b>Experience:</b> ${a.experience} \u00b7 <b>Equipment:</b> ${a.equipment}</div>
     <div class="rule"><b>Training days:</b> ${days} per week, spread across the week automatically.</div>
     ${isKnee ? `<div class="avoid-box"><b>Knee-aware:</b> only joint-safe exercises are included \u2014 no squats, lunges, or high-impact cardio.</div>` : ''}
     ${cardioNote ? `<div class="rule">${cardioNote}</div>` : ''}
@@ -951,7 +974,7 @@ function buildCustomProgram(a){
 
   return {
     title: 'Your Custom Plan',
-    subtitle: `${a.goal} \u00b7 ${days} days/week \u00b7 ${a.equipment}`,
+    subtitle: `${goalText} \u00b7 ${days} days/week \u00b7 ${a.equipment}`,
     accent:'#7C5CBF', tagText:'Personalized', rulesLabel:'Plan logic', rulesHtml,
     homeIcon:`<path d="M12 3 L14.5 9.5 L21 10 L16 14.5 L17.5 21 L12 17.5 L6.5 21 L8 14.5 L3 10 L9.5 9.5 Z" fill="white"/>`,
     days: daysArr,
@@ -966,7 +989,7 @@ function saveCustomAnswers(a){
 }
 function ensureCustomProgram(){
   const a = loadCustomAnswers();
-  if(a && a.injury !== 'Back, shoulder, or other issue'){
+  if(a && !hasOtherInjury(a)){
     PROGRAMS.custom = buildCustomProgram(a);
     return true;
   }
@@ -1066,6 +1089,7 @@ let screen = 'home'; // 'home' | 'quiz' | 'advisory' | 'program' | 'nutrition'
 let quizStep = 0;
 let quizAnswers = {};
 let nutriGoal = 'Maintain';
+const APP_VERSION = '23 Nov 2026 \u00b7 watch remote v2';
 const expandedCards = new Set(); // completed exercise cards the user re-opened
 let popKey = null;      // pip that was just ticked (gets a pop animation)
 let justDoneKey = null; // exercise card that just collapsed (gets a flash)
@@ -1470,6 +1494,7 @@ function renderHome(){
     <div class="prog-grid">
       ${otherIds.map(programCard).join('')}
     </div>
+    <div class="app-ver">Version ${APP_VERSION}</div>
     <button class="nutri-btn" id="openNutrition">\u{1F957} Nutrition Guide</button>
   `;
   app.querySelectorAll('[data-open]').forEach(btn=>{
@@ -1641,6 +1666,7 @@ function renderProgramView(){
   </div>`;
 
   html += `<button class="swap-day-btn" id="swapDayBtn">\u{1F500} Swap this day with another</button>`;
+  if(day.ids.length){ html += watchBtnHtml(); }
 
   if(day.ids.length){
     const timer = loadTimer(currentProgram, activeDay);
@@ -1692,6 +1718,8 @@ function renderProgramView(){
   popKey = null; justDoneKey = null;
   attachExerciseHandlers(day);
   document.getElementById('swapDayBtn').onclick = ()=> openDaySwap(posFromLabel(activeDay));
+  const watchBtn = document.getElementById('watchBtn');
+  if(watchBtn) watchBtn.onclick = ('mediaSession' in navigator && typeof MediaMetadata !== 'undefined') ? toggleRemote : null;
 }
 
 function attachExerciseHandlers(day){
@@ -2008,6 +2036,126 @@ function setFill(btn, pct){
   if(btn && btn.style && btn.style.setProperty) btn.style.setProperty('--p', pct + '%');
 }
 
+/* ---- Watch / earbud remote (Media Session) ----
+   A near-silent looping sound makes the phone show media controls, which Samsung
+   Galaxy Watch mirrors. Play/Pause starts or stops timers; the watch screen shows the countdown. */
+let remoteOn = false;
+let remoteAudio = null;
+let remoteMsg = '';
+function silentWavUrl(){
+  const rate = 8000, n = rate * 10; // 10 s loop: browsers ignore very short clips for media controls
+  const buf = new ArrayBuffer(44 + n*2), v = new DataView(buf);
+  const w = (o, str)=>{ for(let i=0;i<str.length;i++) v.setUint8(o+i, str.charCodeAt(i)); };
+  w(0,'RIFF'); v.setUint32(4, 36+n*2, true); w(8,'WAVE'); w(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,rate,true); v.setUint32(28,rate*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true);
+  w(36,'data'); v.setUint32(40, n*2, true);
+  for(let i=0;i<n;i++) v.setInt16(44+i*2, Math.round(Math.sin(2*Math.PI*30*i/rate)*60), true); // inaudible 30 Hz hum
+  return URL.createObjectURL(new Blob([buf], {type:'audio/wav'}));
+}
+function exName(id){
+  try{
+    const day = dayAtPosition(currentProgram, posFromLabel(activeDay));
+    return EX[getActiveId(day, id)].name;
+  }catch(e){ return EX[id] ? EX[id].name : ''; }
+}
+function remoteMeta(title, artist){
+  if(!remoteOn || !('mediaSession' in navigator) || typeof MediaMetadata === 'undefined') return;
+  try{ navigator.mediaSession.metadata = new MediaMetadata({title: title, artist: artist || '', album: 'Workout remote'}); }catch(e){ /* ignore */ }
+}
+function anyTimerRunning(){
+  return Object.keys(holdTimers).length > 0 || Object.keys(restTimers).length > 0;
+}
+function stopAllTimers(){
+  Object.keys(holdTimers).forEach(k=>{ clearInterval(holdTimers[k].interval); delete holdTimers[k]; });
+  Object.keys(restTimers).forEach(k=>{ clearInterval(restTimers[k].interval); delete restTimers[k]; });
+  if(screen === 'program' && currentProgram) render();
+  remoteMeta('Stopped', 'Press play for the next hold');
+}
+// Next timed hold today: first unfinished one; single-leg moves alternate left / right
+function findNextHold(){
+  if(screen !== 'program' || !currentProgram) return null;
+  ensureDayStateInitialized(currentProgram, activeDay);
+  const day = dayAtPosition(currentProgram, posFromLabel(activeDay));
+  for(const id of day.ids){
+    const ex = EX[getActiveId(day, id)];
+    if(!ex.timed) continue;
+    const slot = state[currentProgram][activeDay][id];
+    if(ex.perSide){
+      const l = slot.left.filter(Boolean).length, r = slot.right.filter(Boolean).length;
+      if(l >= ex.sets && r >= ex.sets) continue;
+      const side = (l < ex.sets && (l <= r || r >= ex.sets)) ? 'left' : 'right';
+      return {id, side, ex};
+    }
+    if(!slot.every(Boolean)) return {id, side:null, ex};
+  }
+  return null;
+}
+function startNextHold(){
+  if(screen !== 'program'){ remoteMeta('Open today\u2019s workout first', ''); return; }
+  const t = findNextHold();
+  if(!t){ remoteMeta('No timed holds left today', 'Nice work \u2713'); return; }
+  const sel = t.side ? `[data-hold="${t.id}"][data-side="${t.side}"]` : `[data-hold="${t.id}"]:not([data-side])`;
+  const btn = document.querySelector(sel);
+  if(!btn){ remoteMeta('Couldn\u2019t find the timer', 'Open the workout on your phone'); return; }
+  toggleHold(t.id, t.ex.holdSeconds, btn, t.side);
+}
+function remoteToggle(){
+  if(anyTimerRunning()) stopAllTimers(); else startNextHold();
+}
+function keepRemoteAlive(){
+  if(!remoteOn) return;
+  if(remoteAudio && remoteAudio.paused) remoteAudio.play().catch(()=>{});
+  try{ navigator.mediaSession.playbackState = 'playing'; }catch(e){ /* ignore */ }
+}
+async function startRemote(){
+  if(!('mediaSession' in navigator) || typeof MediaMetadata === 'undefined') return false;
+  if(!remoteAudio){
+    remoteAudio = new Audio();
+    remoteAudio.src = silentWavUrl();
+    remoteAudio.loop = true;
+  }
+  try{ await remoteAudio.play(); }catch(e){ return false; }
+  remoteOn = true;
+  const ms = navigator.mediaSession;
+  const wrap = fn => () => { try{ fn(); }catch(e){ /* ignore */ } keepRemoteAlive(); };
+  const set = (a, fn)=>{ try{ ms.setActionHandler(a, wrap(fn)); }catch(e){ /* action not supported */ } };
+  set('play', remoteToggle); set('pause', remoteToggle);
+  set('nexttrack', startNextHold);
+  set('previoustrack', stopAllTimers); set('stop', stopAllTimers);
+  try{ ms.playbackState = 'playing'; }catch(e){ /* ignore */ }
+  remoteMeta('Workout remote ready', 'Play = start next hold \u00b7 Pause = stop');
+  return true;
+}
+function stopRemote(){
+  remoteOn = false;
+  if(remoteAudio) remoteAudio.pause();
+  try{
+    ['play','pause','nexttrack','previoustrack','stop'].forEach(a=>{ try{ navigator.mediaSession.setActionHandler(a, null); }catch(e){} });
+    navigator.mediaSession.metadata = null;
+    navigator.mediaSession.playbackState = 'none';
+  }catch(e){ /* ignore */ }
+}
+async function toggleRemote(){
+  unlockAudio();
+  if(remoteOn){ stopRemote(); remoteMsg = ''; }
+  else{
+    const ok = await startRemote();
+    remoteMsg = ok ? '' : 'Couldn\u2019t start \u2014 this browser may not allow media controls.';
+  }
+  render();
+}
+function watchBtnHtml(){
+  if(!('mediaSession' in navigator) || typeof MediaMetadata === 'undefined'){
+    return `<button class="swap-day-btn" id="watchBtn" style="opacity:.6">\u231A Watch remote isn\u2019t available here</button><div class="remote-note">This browser can\u2019t share media controls with a watch. Open the site in Chrome or Samsung Internet (not inside WhatsApp or another app) and it will work.</div>`;
+  }
+  const label = remoteOn ? '\u231A Watch remote ON \u2014 tap to turn off' : '\u231A Use my watch as a remote';
+  const note = remoteOn
+    ? `<div class="remote-note">On your watch, open the media controls. <b>Play/Pause</b> starts the next timed hold (or stops a running timer), <b>Next</b> starts the next hold, <b>Previous</b> stops. The countdown shows on the watch.</div>`
+    : (remoteMsg ? `<div class="remote-note">${remoteMsg}</div>` : '');
+  return `<button class="swap-day-btn" id="watchBtn">${label}</button>${note}`;
+}
+
 function slotDone(slot){
   return Array.isArray(slot) ? slot.every(Boolean) : (slot.left.every(Boolean) && slot.right.every(Boolean));
 }
@@ -2035,6 +2183,7 @@ function toggleHold(id, duration, btn, side){
     btn.textContent = `Start ${duration}s`;
     btn.classList.remove('running');
     setFill(btn, 0);
+    remoteMeta('Stopped', 'Press play for the next hold');
     return;
   }
   btn.classList.add('running');
@@ -2042,6 +2191,7 @@ function toggleHold(id, duration, btn, side){
   // 3-2-1 countdown first, so there's time to get into position
   let prep = 3;
   btn.textContent = 'Get ready: ' + prep;
+  remoteMeta(exName(id), 'Get ready: ' + prep + (side ? ' \u00b7 ' + side : ''));
   holdTimers[key] = { interval: setInterval(()=>{
     prep--;
     if(prep <= 0){
@@ -2050,6 +2200,7 @@ function toggleHold(id, duration, btn, side){
       startHoldCountdown(id, duration, btn, side, key);
     } else {
       btn.textContent = 'Get ready: ' + prep;
+      remoteMeta(exName(id), 'Get ready: ' + prep + (side ? ' \u00b7 ' + side : ''));
       if(navigator.vibrate) navigator.vibrate(60);
     }
   }, 1000)};
@@ -2059,6 +2210,7 @@ function startHoldCountdown(id, duration, btn, side, key){
   let remaining = duration;
   btn.textContent = remaining + 's \u2715';
   setFill(btn, 0);
+  remoteMeta(exName(id), duration + 's' + (side ? ' \u00b7 ' + side : ''));
   holdTimers[key] = { interval: setInterval(()=>{
     remaining--;
     if(remaining<=0){
@@ -2066,6 +2218,7 @@ function startHoldCountdown(id, duration, btn, side, key){
       delete holdTimers[key];
       if(navigator.vibrate) navigator.vibrate([150,80,150]);
       playBeep(880, 180);
+      remoteMeta('Hold done \u2713', 'Press play for the next one');
       setTimeout(()=>playBeep(1040, 180), 150);
       const slot = state[currentProgram][activeDay][id];
       const arr = side ? slot[side] : slot;
@@ -2077,6 +2230,7 @@ function startHoldCountdown(id, duration, btn, side, key){
     } else {
       btn.textContent = remaining + 's \u2715';
       setFill(btn, (duration - remaining) / duration * 100);
+      remoteMeta(exName(id), remaining + 's' + (side ? ' \u00b7 ' + side : ''));
     }
   }, 1000)};
 }
@@ -2091,12 +2245,14 @@ function toggleRest(id, btn, side){
     btn.textContent = `Rest ${duration}s`;
     btn.classList.remove('running');
     setFill(btn, 0);
+    remoteMeta('Rest stopped', '');
     return;
   }
   let remaining = duration;
   btn.textContent = remaining + 's \u2715';
   btn.classList.add('running');
   setFill(btn, 0);
+  remoteMeta('Rest', duration + 's');
   restTimers[key] = { interval: setInterval(()=>{
     remaining--;
     if(remaining<=0){
@@ -2107,9 +2263,11 @@ function toggleRest(id, btn, side){
       setFill(btn, 0);
       if(navigator.vibrate) navigator.vibrate(200);
       playBeep(880, 200);
+      remoteMeta('Rest over \u2014 go!', 'Press play for the next hold');
     } else {
       btn.textContent = remaining + 's \u2715';
       setFill(btn, (duration - remaining) / duration * 100);
+      remoteMeta('Rest', remaining + 's');
     }
   }, 1000)};
 }
@@ -2128,30 +2286,51 @@ function renderQuiz(){
   const q = QUIZ_QUESTIONS[quizStep];
   const app = document.getElementById('app');
 
+  const sel = asArr(quizAnswers[q.key]);
+  const isLast = quizStep === total - 1;
+  const optHtml = o => {
+    const on = sel.includes(o);
+    return `<button class="quiz-option${on ? ' selected' : ''}${q.multi ? ' multi' : ''}" data-opt="${o}">${q.multi ? `<span class="qbox">${on ? '\u2713' : ''}</span>` : ''}<span>${o}</span></button>`;
+  };
   app.innerHTML = `
     <div class="quiz-progress">
       ${QUIZ_QUESTIONS.map((_,i)=>`<div class="dot ${i<=quizStep?'done':''}"></div>`).join('')}
     </div>
-    <div class="quiz-step-label">Question ${quizStep+1} of ${total}</div>
+    <div class="quiz-step-label">Question ${quizStep+1} of ${total}${q.multi ? ' \u00b7 pick all that apply' : ''}</div>
     <div class="quiz-question">${q.q}</div>
-    ${q.opts.map(opt=>`<button class="quiz-option ${quizAnswers[q.key]===opt?'selected':''}" data-opt="${opt}">${opt}</button>`).join('')}
+    ${q.opts.map(optHtml).join('')}
+    ${q.multi ? `<button class="quiz-next" id="quizNext"${sel.length ? '' : ' disabled'}>${isLast ? 'Finish' : 'Next'} \u2192</button>` : ''}
     ${quizStep>0 ? `<div class="quiz-nav"><button class="quiz-back" id="quizBack">\u2190 Back</button></div>` : ''}
   `;
   app.querySelectorAll('[data-opt]').forEach(btn=>{
     btn.onclick = ()=>{
-      quizAnswers[q.key] = btn.dataset.opt;
-      if(quizStep < total-1){ quizStep++; render(); }
-      else { finishQuiz(); }
+      if(q.multi){ toggleQuizOption(q, btn.dataset.opt); render(); }
+      else { quizAnswers[q.key] = btn.dataset.opt; advanceQuiz(); }
     };
   });
+  const nextBtn = document.getElementById('quizNext');
+  if(nextBtn) nextBtn.onclick = ()=>{ if(asArr(quizAnswers[q.key]).length) advanceQuiz(); };
   if(quizStep>0){
     document.getElementById('quizBack').onclick = ()=>{ quizStep--; render(); };
   }
 }
 
+// Multi-select: toggle an option; an "exclusive" option (e.g. None) clears the others, and vice versa
+function toggleQuizOption(q, opt){
+  let cur = asArr(quizAnswers[q.key]);
+  if(cur.includes(opt)){ cur = cur.filter(x => x !== opt); }
+  else if(q.exclusive && opt === q.exclusive){ cur = [opt]; }
+  else { cur = cur.filter(x => x !== q.exclusive); cur.push(opt); }
+  quizAnswers[q.key] = cur;
+}
+function advanceQuiz(){
+  if(quizStep < QUIZ_QUESTIONS.length - 1){ quizStep++; render(); }
+  else { finishQuiz(); }
+}
+
 function finishQuiz(){
   saveCustomAnswers(quizAnswers);
-  if(quizAnswers.injury === 'Back, shoulder, or other issue'){
+  if(hasOtherInjury(quizAnswers)){
     screen = 'advisory';
     render();
   } else {
